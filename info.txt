@@ -1,0 +1,3 @@
+my_backend: node server.js
+ngrok: ngrok http http://localhost:3000
+my_front_end: flutter run
