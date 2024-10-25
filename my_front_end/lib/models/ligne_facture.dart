@@ -2,6 +2,7 @@ import 'produit.dart';
 
 class LigneFacture {
   final int ligneId;
+  final int factureId;
   final Produit produitId;
   final int quantite;
   final String prixUnitaire;
@@ -9,6 +10,7 @@ class LigneFacture {
 
   LigneFacture({
     required this.ligneId,
+    required this.factureId,
     required this.produitId,
     required this.quantite,
     required this.prixUnitaire,
@@ -17,20 +19,22 @@ class LigneFacture {
 
   factory LigneFacture.fromJson(Map<String, dynamic> json) {
     return LigneFacture(
-        ligneId: json['ligneId'],
-        produitId: json['produitId'],
+        ligneId: json['ligne_id'],
+        factureId: json['facture_id'],
+        produitId: json['produit_id'],
         quantite: json['quantite'],
-        prixUnitaire: json['prixUnitaire'],
-        sousTotal: json['sousTotal']);
+        prixUnitaire: json['prix_unitaire'],
+        sousTotal: json['sous_total']);
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'ligneId': ligneId,
-      'produitId': produitId,
+      'ligne_id': ligneId,
+      'facture_id': factureId,
+      'produit_id': produitId,
       'quantite': quantite,
-      'prixUnitaire': prixUnitaire,
-      'sousTotal': sousTotal,
+      'prix_unitaire': prixUnitaire,
+      'sous_total': sousTotal,
     };
   }
 }

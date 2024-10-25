@@ -3,21 +3,21 @@ import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/produit.dart';
 
 //Bouton avec action
-Align actionButton(String text, VoidCallback action) {
+Widget actionButton(String text, VoidCallback action) {
   return Align(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        onPressed: () {
-          action();
-        },
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 12, // Taille de la police
-            fontWeight: FontWeight.bold, // Gras,
-          ),
+    alignment: Alignment.centerRight,
+    child: TextButton(
+      onPressed: () {
+        action();
+      },
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12, // Taille de la police
+          fontWeight: FontWeight.bold, // Gras,
         ),
-      ));
+      ),
+    ));
 }
 
 Widget textButtonDangerClient(List<Client> arg, String text) {
@@ -39,12 +39,12 @@ Widget textButtonDangerProduit(List<Produit> arg, String text) {
 }
 
 //Date Picker
-TextField datePickerFull(TextEditingController controller, BuildContext context,
-    Function(BuildContext) selectDate) {
+Widget datePickerFull(TextEditingController controller, BuildContext context,
+  String labelText, Future <void> Function(BuildContext, TextEditingController) selectDate) {
   return TextField(
     controller: controller,
     decoration: InputDecoration(
-      labelText: 'Date de Facture (YYYY-MM-DD)',
+      labelText: labelText,
       prefixIcon: Icon(Icons.calendar_today),
       filled: true,
       fillColor: Colors.grey[200],
@@ -64,13 +64,13 @@ TextField datePickerFull(TextEditingController controller, BuildContext context,
     readOnly: true,
     onTap: () {
       FocusScope.of(context).requestFocus(FocusNode());
-      selectDate(context);
+      selectDate(context, controller);
     },
   );
 }
 
 //DropDownClient
-DropdownButtonFormField<int> clientDropdown(int? selectedClient, String text,
+Widget clientDropdown(int? selectedClient, String text,
     List<Client> clients, Function(int?) onChanged) {
   return DropdownButtonFormField<int>(
     value: selectedClient,
@@ -90,7 +90,7 @@ DropdownButtonFormField<int> clientDropdown(int? selectedClient, String text,
 }
 
 //DropDownClient
-DropdownButtonFormField<int> produitDropdown(int? selectedProduit, String text,
+Widget produitDropdown(int? selectedProduit, String text,
     List<Produit> produits, Function(int?) onChanged) {
   return DropdownButtonFormField<int>(
     value: selectedProduit,
@@ -106,5 +106,46 @@ DropdownButtonFormField<int> produitDropdown(int? selectedProduit, String text,
     onChanged: produits.isNotEmpty
         ? onChanged
         : null, // Désactiver le Dropdown si clients est vide
+  );
+}
+
+//DropDownStatut
+Widget statutDropdown(
+    String? selectedStatut, Function(String?) onChanged) {
+  List<String> statuts = ['Non Payée', 'Payée', 'En Cours'];
+
+  return DropdownButtonFormField<String>(
+    value: selectedStatut,
+    decoration: InputDecoration(labelText: 'Statut'),
+    items: statuts.map((String statut) {
+      return DropdownMenuItem<String>(
+        value: statut,
+        child: Text(statut),
+      );
+    }).toList(),
+    onChanged: onChanged,
+  );
+}
+
+Widget textQuantity(TextEditingController controller, VoidCallback calculateSousTotal, Function(String) updateQuantity) {
+  return TextField(
+    controller: controller,
+    decoration: InputDecoration(labelText: 'Quantité'),
+    keyboardType: TextInputType.number,
+    onChanged: (value) {
+      updateQuantity(value);
+      calculateSousTotal();
+    },
+  );
+}
+
+Widget customElevatedButton({
+  required bool isEnabled,
+  required VoidCallback? onPressed,
+  required String buttonText,
+}) {
+  return ElevatedButton(
+    onPressed: isEnabled ? onPressed : null,
+    child: Text(buttonText),
   );
 }

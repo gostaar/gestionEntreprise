@@ -4,7 +4,6 @@ import 'Pages/clients_page.dart'; // Importez vos autres pages ici
 import 'Pages/comptes_page.dart';
 import 'Pages/factures_page.dart';
 import 'Pages/transactions_page.dart';
-//import 'Pages/produits_page.dart';
 import 'Pages/parametres_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 

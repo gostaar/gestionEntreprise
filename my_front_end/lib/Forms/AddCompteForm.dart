@@ -1,7 +1,6 @@
 import 'dart:convert'; // Pour utiliser jsonEncode
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:my_first_app/models/compte.dart';
 import 'package:my_first_app/constants.dart';
 
 class AddCompteForm extends StatefulWidget {

@@ -20,41 +20,46 @@ class _FacturesPageState extends State<FacturesPage> {
 
   //déclaration de fonctions Fututres
   Future<void> _fetchFactures() async {
-    try {
-      final response = await http.get(Uri.parse('$apiUrl/factures'));
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonResponse = json.decode(response.body);
-        print(jsonResponse);
-        List<Facture> factures =
-            jsonResponse.map((json) => Facture.fromJson(json)).toList();
-        print('etape1');
+  try {
+    final response = await http.get(Uri.parse('$apiUrl/factures'));
+    if (response.statusCode == 200) {
+      final dynamic jsonResponse = json.decode(response.body);
+
+      // Vérifiez si la réponse est une liste
+      if (jsonResponse is List) {
+
+        List<Facture> factures = jsonResponse.map((json) {
+          return Facture.fromJson(json);
+        }).toList();
+
         for (var facture in factures) {
           if (!clients.containsKey(facture.clientId)) {
-            print('etape $facture');
             final client = await _getClient(facture.clientId);
             clients[facture.clientId] = client; // Stockez le client dans le Map
           }
         }
-        print('etape3');
+
         setState(() {
           _factures = factures;
         });
       } else {
-        print(
-            'Erreur lors de la récupération des factures : statut ${response.statusCode}');
-        print('Contenu de la réponse : ${response.body}');
-        throw Exception('Échec de la récupération des factures');
+        print('Erreur : la réponse n\'est pas une liste.');
       }
-    } catch (error) {
-      print(
-          'Erreur lors de la récupération des factures depuis factures_page : $error');
+    } else {
+      print('Erreur lors de la récupération des factures : statut ${response.statusCode}');
+      print('Contenu de la réponse : ${response.body}');
+      throw Exception('Échec de la récupération des factures');
     }
+  } catch (error) {
+    print('Erreur lors de la récupération des factures depuis factures_page : $error');
   }
+}
+
 
   Future<dynamic> _getData(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
-
+print(response);
       // Vérifiez si la requête a réussi
       if (response.statusCode == 200) {
         return jsonDecode(response.body); // Décodez la réponse JSON
@@ -178,8 +183,7 @@ class _FacturesPageState extends State<FacturesPage> {
       appBar: AppBar(title: Text('Factures')),
       body: _factures.isEmpty
           ? Center(
-              child: Text('Aucune facture disponible',
-                  style: TextStyle(fontSize: 24)))
+              child: Text('Aucune facture disponible', style: TextStyle(fontSize: 24)))
           : ListView.builder(
               itemCount: _factures.length,
               itemBuilder: (context, index) {
