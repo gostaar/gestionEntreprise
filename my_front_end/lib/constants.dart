@@ -1,2 +1,2 @@
 const String apiUrl =
-    'https://c25c-2a01-cb1c-d1f-ea00-e1cb-4670-4e5-54b1.ngrok-free.app';
+    'https://19b9-2a01-cb1c-d1f-ea00-6c13-5192-488a-3fbb.ngrok-free.app';

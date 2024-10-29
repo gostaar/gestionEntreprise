@@ -3,7 +3,7 @@ import 'produit.dart';
 class LigneFacture {
   final int ligneId;
   final int factureId;
-  final Produit produitId;
+  final int produitId;
   final int quantite;
   final String prixUnitaire;
   final String sousTotal;

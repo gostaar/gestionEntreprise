@@ -1,4 +1,4 @@
-import 'dart:convert'; // Pour utiliser jsonEncode
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_first_app/models/client.dart';
@@ -10,13 +10,12 @@ class AddClientForm extends StatefulWidget {
 }
 
 class _AddClientFormState extends State<AddClientForm> {
-  // Controllers pour récupérer les valeurs saisies
+
   final List<TextEditingController> _controllers = List.generate(
     9,
     (_) => TextEditingController(),
   );
 
-  // Mappage des labels avec les contrôleurs
   final List<String> _labels = [
     'Nom',
     'Prénom',
@@ -60,18 +59,16 @@ class _AddClientFormState extends State<AddClientForm> {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
     if (response.statusCode == 200) {
-      Navigator.pop(context, true); // Fermer la fenêtre après l'ajout
+      Navigator.pop(context, true);
     }
   }
 
-// Méthode pour récupérer l'ID du dernier client
   Future<int> _getLastClientId() async {
     final response = await http.get(Uri.parse('$apiUrl/clients'));
 
     if (response.statusCode == 200) {
       final List<dynamic> clients = jsonDecode(response.body);
 
-      // Étape 3 : Récupérer l'ID maximum
       if (clients.isNotEmpty) {
         final maxId = clients
             .map((client) => client['clientId'])
@@ -81,7 +78,7 @@ class _AddClientFormState extends State<AddClientForm> {
       }
     }
 
-    return 0; // Si aucun client n'existe, retournez 0
+    return 0;
   }
 
   @override

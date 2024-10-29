@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert'; // Pour le décodage JSON
 import 'package:my_first_app/Forms/AddCompteForm.dart';
-import 'package:my_first_app/constants.dart';
+import 'package:my_first_app/Service/compte_service.dart';
+import 'package:my_first_app/models/compte.dart'; 
 
 class ComptesPage extends StatefulWidget {
   @override
@@ -10,7 +9,9 @@ class ComptesPage extends StatefulWidget {
 }
 
 class _ComptesPageState extends State<ComptesPage> {
-  List comptes = [];
+  List<Compte> comptes = []; 
+  final CompteService compteService = CompteService();
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -19,14 +20,17 @@ class _ComptesPageState extends State<ComptesPage> {
   }
 
   Future<void> fetchComptes() async {
-    final response = await http.get(Uri.parse('$apiUrl/comptes'));
-
-    if (response.statusCode == 200) {
+    try {
+      final fetchedComptes = await compteService.fetchComptes();
       setState(() {
-        comptes = json.decode(response.body);
+        comptes = fetchedComptes;
+        isLoading = false;
       });
-    } else {
-      throw Exception('Erreur lors du chargement des comptes');
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Erreur lors du chargement des comptes : $e');
     }
   }
 
@@ -36,42 +40,36 @@ class _ComptesPageState extends State<ComptesPage> {
       appBar: AppBar(
         title: Text('Comptes'),
       ),
-      body: comptes.isEmpty
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              itemCount: comptes.length,
-              itemBuilder: (context, index) {
-                final compte = comptes[index];
-                return ListTile(
-                  title:
-                      Text('${compte['nom_compte']} ${compte['type_compte']}'),
-                  subtitle: Text(compte['solde']),
-                );
-              },
-            ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator()) 
+          : comptes.isEmpty
+              ? Center(child: Text('Aucun compte disponible'))
+              : ListView.builder(
+                  itemCount: comptes.length,
+                  itemBuilder: (context, index) {
+                    final compte = comptes[index];
+                    return ListTile(
+                      title: Text('${compte.nomCompte} ${compte.typeCompte}'), // Utilisez les propriétés du modèle
+                      subtitle: Text('${compte.solde} €'), // Assurez-vous d'afficher le solde correctement
+                    );
+                  },
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showAddCompteModal(context); // Ouvre le modal pour ajouter un client
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (BuildContext context) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: AddCompteForm(), // Appelle un widget contenant le formulaire d'ajout
+              );
+            },
+          );
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.blue,
       ),
-    );
-  }
-
-  void _showAddCompteModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child:
-              AddCompteForm(), // Appelle un widget contenant le formulaire d'ajout
-        );
-      },
     );
   }
 }

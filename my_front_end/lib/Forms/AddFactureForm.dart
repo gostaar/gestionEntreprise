@@ -145,6 +145,7 @@ class _AddFactureFormState extends State<AddFactureForm> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Facture ajoutée avec succès!')),
       );
+      Navigator.pop(context, true); 
     } else {
       throw Exception('Erreur lors de l\'ajout de la facture: ${response.body}');
     }

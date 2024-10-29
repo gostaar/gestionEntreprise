@@ -13,4 +13,14 @@ router.get('/', async (req, res) => {
     }
   });
 
+router.get('/:id', async (req, res) => {
+  const produitId = req.params.id;
+  try {
+    const result = await pool.query('SELECT * FROM Produits WHERE produit_id = $1', [produitId]);
+    res.json(result.rows);
+  } catch(err) {
+    console.error(err.message);
+      res.status(500).send('Erreur serveur');
+  }
+})
   module.exports = router;

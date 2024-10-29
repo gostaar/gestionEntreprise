@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/constants.dart';
 
 class UtilisateursPage extends StatelessWidget {
   @override

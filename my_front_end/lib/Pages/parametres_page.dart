@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'utilisateurs_page.dart'; // Assurez-vous d'importer la page Utilisateurs ici
+import 'utilisateurs_page.dart'; 
 
 class ParametresPage extends StatelessWidget {
   @override

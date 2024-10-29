@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/models/facture.dart';
 import 'package:my_first_app/models/client.dart';
+import 'package:my_first_app/models/facture.dart';
 import 'package:my_first_app/models/ligne_facture.dart';
-import 'package:my_first_app/Service/client_service.dart'; // Assurez-vous d'avoir ce service pour récupérer les données
+import 'package:my_first_app/models/produit.dart';
+import 'package:my_first_app/Service/produit_service.dart';
+import 'package:my_first_app/Service/client_service.dart';
+import 'package:my_first_app/Widget/global.dart';
 
-// Page de Détails de la Facture
 class FactureDetailPage extends StatelessWidget {
   final Facture facture;
-  final List<LigneFacture> lignesFacture; // Ajout de lignesFacture
+  final List<LigneFacture> lignesFacture;
 
   FactureDetailPage({
     required this.facture,
@@ -15,9 +17,21 @@ class FactureDetailPage extends StatelessWidget {
     required Client client,
   });
 
-  Future<Client?> _fetchClient(int clientId) async {
-    // Remplacez ceci par votre logique pour récupérer le client à partir de son ID
-    return await ClientService.getClientById(clientId);
+  Future<List<Widget>> _buildProductRows() async {
+    List<Widget> rows = [];
+
+    for (var ligne in lignesFacture) {
+      Produit? produit = await _getProduit(ligne.produitId);
+      rows.add(ProductDescriptionRow(produit: produit));
+      rows.add(ProductDetailsRow(ligne: ligne));
+    }
+
+    return rows;
+  }
+
+  Future<Produit?> _getProduit(int produitId) async {
+    List<Produit>? produits = await ProduitService.getProduitsById(produitId);
+    return produits != null && produits.isNotEmpty ? produits.first : null;
   }
 
   String formatDate(DateTime? date) {
@@ -34,59 +48,34 @@ class FactureDetailPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<Client?>(
-          future: _fetchClient(facture.clientId), // Récupération du client
+          future: ClientService.getClientById(facture.clientId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(
-                  child: Text('Erreur lors de la récupération du client'));
-            } else if (!snapshot.hasData || snapshot.data == null) {
-              return Center(child: Text('Client non trouvé'));
+            } else if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+              return Center(child: Text('Erreur lors de la récupération du client'));
             }
 
             final Client client = snapshot.data!;
-
             return ListView(
               children: [
-                // Informations du Client
-                Text('Client: ${client.nom} ${client.prenom}',
-                    style: TextStyle(fontSize: 20)),
-                Text('Email: ${client.email}', style: TextStyle(fontSize: 16)),
-                Text('Téléphone: ${client.telephone}',
-                    style: TextStyle(fontSize: 16)),
-                Text(
-                    'Adresse: ${client.adresse}, ${client.ville}, ${client.codePostal}',
-                    style: TextStyle(fontSize: 16)),
-                Text('Pays: ${client.pays}', style: TextStyle(fontSize: 16)),
-                SizedBox(height: 20),
+                ClientInfoSection(client: client),
+                FactureInfoSection(facture: facture),
+                const SizedBox(height: 20),
+                const TableHeader(),
+                Divider(thickness: 2),
+                FutureBuilder<List<Widget>>(
+                  future: _buildProductRows(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('Erreur lors du chargement des lignes de facture'));
+                    }
 
-                // Informations de la Facture
-                Text('Montant Total: ${facture.montantTotal} €',
-                    style: TextStyle(fontSize: 20)),
-                Text('Statut: ${facture.statut}',
-                    style: TextStyle(fontSize: 18)),
-                if (facture.dateFacture != null)
-                  Text('Date Facture: ${formatDate(facture.dateFacture)}',
-                      style: TextStyle(fontSize: 18)),
-                if (facture.datePaiement != null)
-                  Text('Date Paiement: ${formatDate(facture.datePaiement)}',
-                      style: TextStyle(fontSize: 18)),
-                SizedBox(height: 20),
-
-                // Détails des Lignes de Facture
-                Text('Détails de la facture:',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                SizedBox(height: 10),
-                ...lignesFacture.map((ligne) {
-                  return ListTile(
-                    title: Text(
-                        'Produit ID: ${ligne.produitId}, Quantité: ${ligne.quantite}'),
-                    subtitle: Text(
-                        'Prix Unitaire: ${ligne.prixUnitaire} €, Sous-total: ${ligne.sousTotal} €'),
-                  );
-                }).toList(),
+                    return Column(children: snapshot.data!);
+                  },
+                ),
               ],
             );
           },
