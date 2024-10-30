@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/Service/client_service.dart';
-import '../Widget/global.dart';
+import 'package:my_first_app/models/client.dart';
+import '../Widget/Functions.dart';
 
 class ClientsPage extends StatefulWidget {
   @override
@@ -8,12 +9,12 @@ class ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<ClientsPage> {
-  List clients = []; // Liste qui contiendra les clients récupérés
+  List<Client> clients = []; 
 
   @override
   void initState() {
     super.initState();
-    _loadClients(); // Appel à la fonction qui récupère les clients à l'initialisation
+    _loadClients(); 
   }
   
   void _loadClients() async {
@@ -41,20 +42,23 @@ class _ClientsPageState extends State<ClientsPage> {
                 final client = clients[index];
                 return ListTile(
                   title: Text(
-                      '${client['nom']} ${client['prenom']}'), 
-                  subtitle: Text(client['email']), 
+                      '${client.nom} ${client.prenom}'), 
+                  subtitle: Text(client.email ?? ""), 
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
+        onPressed: () async {
+          final result = await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             builder: (BuildContext context) {
               return const AddClientModal();
             },
           );
+          if (result == true) { 
+            _loadClients();
+          }
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.blue,

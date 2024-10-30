@@ -1,4 +1,4 @@
-import 'dart:convert'; // Pour utiliser jsonEncode
+import 'dart:convert'; 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_first_app/constants.dart';
@@ -9,27 +9,21 @@ class AddCompteForm extends StatefulWidget {
 }
 
 class _AddCompteFormState extends State<AddCompteForm> {
-  // Controllers pour récupérer les valeurs saisies
   final TextEditingController _nom_compteController = TextEditingController();
   final TextEditingController _soldeController = TextEditingController();
-
-  // Clé pour le formulaire
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  bool _isLoading = false; // Pour gérer l'état de chargement
-
+  bool _isLoading = false; 
   String? _selectedTypeCompte;
   List<String> _typesDeCompte = ['Actif', 'Passif', 'Revenu', 'Dépense'];
 
-  // Fonction pour gérer l'ajout du compte
   void _addCompte() async {
     if (_formKey.currentState!.validate()) {
       final String nom_compte = _nom_compteController.text.trim();
-      final String type_compte = _selectedTypeCompte!; // Utiliser la sélection
+      final String type_compte = _selectedTypeCompte!;
       final String solde = _soldeController.text.trim();
 
       setState(() {
-        _isLoading = true; // Commencer le chargement
+        _isLoading = true; 
       });
 
       final response = await http.post(
@@ -43,17 +37,15 @@ class _AddCompteFormState extends State<AddCompteForm> {
       );
 
       setState(() {
-        _isLoading = false; // Fin du chargement
+        _isLoading = false; 
       });
 
       if (response.statusCode == 200) {
-        // Si l'ajout est réussi
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Compte ajouté avec succès')),
         );
-        Navigator.pop(context); // Fermer la fenêtre après l'ajout
+        Navigator.pop(context); 
       } else {
-        // Si l'ajout échoue, afficher le message d'erreur
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
@@ -70,7 +62,7 @@ class _AddCompteFormState extends State<AddCompteForm> {
         padding:
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Form(
-          key: _formKey, // Ajout de la clé de formulaire
+          key: _formKey, 
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -79,7 +71,7 @@ class _AddCompteFormState extends State<AddCompteForm> {
                 decoration: InputDecoration(labelText: 'Nom du compte'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer un nom de compte'; // Message d'erreur
+                    return 'Veuillez entrer un nom de compte'; 
                   }
                   return null;
                 },
@@ -106,13 +98,13 @@ class _AddCompteFormState extends State<AddCompteForm> {
                 controller: _soldeController,
                 decoration: InputDecoration(labelText: 'Solde'),
                 keyboardType: TextInputType.numberWithOptions(
-                    decimal: true), // Permettre la saisie de nombres décimaux
+                    decimal: true), 
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer un solde'; // Message d'erreur
+                    return 'Veuillez entrer un solde'; 
                   }
                   if (double.tryParse(value) == null) {
-                    return 'Le solde n\'a pas un format valide'; // Message d'erreur
+                    return 'Le solde n\'a pas un format valide'; 
                   }
                   return null;
                 },
@@ -121,11 +113,11 @@ class _AddCompteFormState extends State<AddCompteForm> {
               ElevatedButton(
                 onPressed: _isLoading
                     ? null
-                    : _addCompte, // Désactive le bouton si en cours de chargement
+                    : _addCompte, 
                 child: _isLoading
                     ? CircularProgressIndicator(
                         color: Colors
-                            .white) // Changer la couleur de l'indicateur de chargement
+                            .white) 
                     : Text('Ajouter'),
               ),
             ],

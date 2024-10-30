@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // Assurez-vous d'importer votre instance de pool
+const pool = require('../db'); 
 
-// Route pour obtenir tous les clients
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM Clients');
@@ -13,7 +12,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Route pour ajouter un client
 router.post('/', async (req, res) => {
   const { nom, prenom, email, telephone, adresse, ville, code_postal, pays } = req.body;
   try {
@@ -28,7 +26,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Route pour obtenir un client par ID
 router.get('/:id', async (req, res) => {
   const clientId = req.params.id;
   try {

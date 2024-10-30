@@ -5,7 +5,7 @@ import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
 import 'package:my_first_app/Forms/AddFactureForm.dart';
 import 'package:my_first_app/Pages/detailsFacture.dart';
-import 'package:my_first_app/Widget/global.dart';
+import 'package:my_first_app/Widget/Functions.dart';
 
 class FacturesPage extends StatefulWidget {
   @override
@@ -13,7 +13,6 @@ class FacturesPage extends StatefulWidget {
 }
 
 class _FacturesPageState extends State<FacturesPage> {
-  //variables
   List<Facture> _factures = [];
   Map<int, Client> clients = {};
   final factureService = FactureService();
@@ -21,7 +20,19 @@ class _FacturesPageState extends State<FacturesPage> {
   @override
   void initState() {
     super.initState();
-    _refreshFactures();
+    refreshFactures();
+  }
+
+  Future<void> refreshFactures() async {
+    try {
+      final factureService = FactureService();
+      final factures = await factureService.fetchFactures();
+      setState(() {
+        _factures = factures;
+      });
+    } catch (error) {
+      _showError(context, 'Erreur lors de la récupération des factures: $error');
+    }
   }
 
   void _showError(BuildContext context, String message) {
@@ -31,6 +42,17 @@ class _FacturesPageState extends State<FacturesPage> {
         return ErrorDialog(message: message);
       },
     );
+  }
+
+  void _openAddFactureForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: AddFactureForm(),
+      ),
+    ).then((_) => refreshFactures());
   }
 
   void _navigateToDetailPage(BuildContext context, Facture facture) async {
@@ -58,29 +80,6 @@ class _FacturesPageState extends State<FacturesPage> {
     } catch (error) {
       Navigator.pop(context);
       _showError(context, 'Erreur lors de la récupération des données: $error');
-    }
-  }
-
-  void _openAddFactureForm(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) => Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: AddFactureForm(),
-      ),
-    ).then((_) => _refreshFactures());
-  }
-
-  Future<void> _refreshFactures() async {
-    try {
-      final factureService = FactureService();
-      final factures = await factureService.fetchFactures();
-      setState(() {
-        _factures = factures;
-      });
-    } catch (error) {
-      _showError(context, 'Erreur lors de la récupération des factures: $error');
     }
   }
 

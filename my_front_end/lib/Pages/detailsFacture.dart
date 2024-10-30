@@ -5,7 +5,7 @@ import 'package:my_first_app/models/ligne_facture.dart';
 import 'package:my_first_app/models/produit.dart';
 import 'package:my_first_app/Service/produit_service.dart';
 import 'package:my_first_app/Service/client_service.dart';
-import 'package:my_first_app/Widget/global.dart';
+import 'package:my_first_app/Widget/Functions.dart';
 
 class FactureDetailPage extends StatelessWidget {
   final Facture facture;
@@ -17,26 +17,24 @@ class FactureDetailPage extends StatelessWidget {
     required Client client,
   });
 
+  String formatDate(DateTime? date) {
+    if (date == null) return 'Non spécifiée';
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
   Future<List<Widget>> _buildProductRows() async {
     List<Widget> rows = [];
-
     for (var ligne in lignesFacture) {
       Produit? produit = await _getProduit(ligne.produitId);
       rows.add(ProductDescriptionRow(produit: produit));
       rows.add(ProductDetailsRow(ligne: ligne));
     }
-
     return rows;
   }
 
   Future<Produit?> _getProduit(int produitId) async {
     List<Produit>? produits = await ProduitService.getProduitsById(produitId);
     return produits != null && produits.isNotEmpty ? produits.first : null;
-  }
-
-  String formatDate(DateTime? date) {
-    if (date == null) return 'Non spécifiée';
-    return '${date.day}/${date.month}/${date.year}';
   }
 
   @override

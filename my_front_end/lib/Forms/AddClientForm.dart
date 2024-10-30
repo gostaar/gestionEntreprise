@@ -29,57 +29,57 @@ class _AddClientFormState extends State<AddClientForm> {
   ];
 
   Future<void> _addClient() async {
-    final lastClientId = await _getLastClientId();
-    final newClientId = lastClientId + 1;
+    try {
+      final lastClientId = await _getLastClientId();
+      final newClientId = lastClientId + 1;
 
-    final newClient = Client(
-      clientId:
-          newClientId, // Assurez-vous de convertir en chaîne si nécessaire
-      nom: _controllers[0].text,
-      prenom: _controllers[1].text,
-      email: _controllers[2].text,
-      telephone: _controllers[3].text,
-      adresse: _controllers[4].text,
-      ville: _controllers[5].text,
-      codePostal: _controllers[6].text,
-      pays: _controllers[7].text,
-      numeroTva: _controllers[8].text,
-    );
+      final newClient = Client(
+        clientId: newClientId, // Assurez-vous de convertir en chaîne si nécessaire
+        nom: _controllers[0].text,
+        prenom: _controllers[1].text,
+        email: _controllers[2].text,
+        telephone: _controllers[3].text,
+        adresse: _controllers[4].text,
+        ville: _controllers[5].text,
+        codePostal: _controllers[6].text,
+        pays: _controllers[7].text,
+        numeroTva: _controllers[8].text,
+      );
+      final response = await http.post(
+        Uri.parse('$apiUrl/clients'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(newClient.toJson()),
+      );
 
-    final response = await http.post(
-      Uri.parse('$apiUrl/clients'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(newClient.toJson()),
-    );
-
-    final message = response.statusCode == 200
-        ? 'Client ajouté avec succès'
-        : 'Erreur lors de l\'ajout du client';
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-    if (response.statusCode == 200) {
       Navigator.pop(context, true);
+
+    } catch (e){ 
+      print('Erreur lors de l\'ajout du client ,$e');
     }
   }
 
-  Future<int> _getLastClientId() async {
-    final response = await http.get(Uri.parse('$apiUrl/clients'));
+ Future<int> _getLastClientId() async {
+  final response = await http.get(Uri.parse('$apiUrl/clients'));
 
-    if (response.statusCode == 200) {
-      final List<dynamic> clients = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    final List<dynamic> clients = jsonDecode(response.body);
 
-      if (clients.isNotEmpty) {
-        final maxId = clients
-            .map((client) => client['clientId'])
-            .cast<int>()
-            .reduce((a, b) => a > b ? a : b);
-        return maxId;
+    if (clients.isNotEmpty) {
+      // Filtre les clients ayant un clientId non nul et de type int
+      final validClientIds = clients
+          .map((client) => client['clientId'])
+          .whereType<int>(); // Exclut les valeurs nulles et non int
+
+      if (validClientIds.isNotEmpty) {
+        // Trouve l'ID maximum parmi les IDs valides
+        return validClientIds.reduce((a, b) => a > b ? a : b);
       }
     }
-
-    return 0;
   }
+
+  return 0; // Retourne 0 si aucun client n'est trouvé ou si aucun ID valide n'est trouvé
+}
+
 
   @override
   Widget build(BuildContext context) {

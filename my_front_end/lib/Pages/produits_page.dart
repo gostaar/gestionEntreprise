@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/Forms/AddProduitForm.dart';
+import 'package:my_first_app/Widget/Functions.dart';
 import 'package:my_first_app/models/produit.dart';
 import 'package:my_first_app/Service/produit_service.dart';
 
@@ -29,6 +30,38 @@ class _ProduitsPageState extends State<ProduitsPage> {
     }
   }
 
+  Future<void> _refreshProduits() async {
+    try {
+      final produitService = ProduitService();
+      final _produits = await produitService.fetchProduits();
+      setState(() {
+        produits = _produits;
+      });
+    } catch (error) {
+      _showError(context, 'Erreur lors de la récupération des factures: $error');
+    }
+  }
+
+  void _openAddProduitForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: AddProduitForm(),
+      ),
+    ).then((_) => _refreshProduits());
+  }
+
+  void _showError(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ErrorDialog(message: message);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,17 +87,7 @@ class _ProduitsPageState extends State<ProduitsPage> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Ouvre le modal pour ajouter un Produit
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: AddProduitForm(),
-            ),
-          );
-        },
+        onPressed: () => _openAddProduitForm(context),
         child: Icon(Icons.add),
         backgroundColor: Colors.blue,
       ),

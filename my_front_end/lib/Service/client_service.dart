@@ -1,5 +1,5 @@
-import 'dart:convert'; // Pour jsonEncode et jsonDecode
-import 'package:http/http.dart' as http; // Assurez-vous d'avoir la dépendance http dans votre pubspec.yaml
+import 'dart:convert'; 
+import 'package:http/http.dart' as http; 
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/constants.dart';
 

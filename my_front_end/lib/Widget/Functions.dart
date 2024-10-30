@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:my_first_app/Forms/AddClientForm.dart';
+import 'package:my_first_app/constants.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/facture.dart';
 import 'package:my_first_app/models/ligne_facture.dart';
 import 'package:my_first_app/models/produit.dart';
 
-void circleAwait(BuildContext context) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => Center(
-      child: CircularProgressIndicator(),
-    ),
-  );
-}
-
+// Dialogue d'erreur
 class ErrorDialog extends StatelessWidget {
   final String message;
 
@@ -37,6 +31,7 @@ class ErrorDialog extends StatelessWidget {
   }
 }
 
+// Modal pour ajouter un client
 class AddClientModal extends StatelessWidget {
   const AddClientModal({Key? key}) : super(key: key);
 
@@ -44,7 +39,7 @@ class AddClientModal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: AddClientForm(), 
+      child: AddClientForm(),
     );
   }
 }
@@ -53,7 +48,7 @@ class AddClientModal extends StatelessWidget {
 class ClientInfoSection extends StatelessWidget {
   final Client client;
 
-  const ClientInfoSection({required this.client});
+  const ClientInfoSection({Key? key, required this.client}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +66,7 @@ class ClientInfoSection extends StatelessWidget {
 class FactureInfoSection extends StatelessWidget {
   final Facture facture;
 
-  const FactureInfoSection({required this.facture});
+  const FactureInfoSection({Key? key, required this.facture}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +84,7 @@ class FactureInfoSection extends StatelessWidget {
 
 // En-tête du tableau des produits
 class TableHeader extends StatelessWidget {
-  const TableHeader();
+  const TableHeader({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +106,7 @@ class TableHeader extends StatelessWidget {
 class ProductDescriptionRow extends StatelessWidget {
   final Produit? produit;
 
-  const ProductDescriptionRow({required this.produit});
+  const ProductDescriptionRow({Key? key, required this.produit}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +125,7 @@ class ProductDescriptionRow extends StatelessWidget {
 class ProductDetailsRow extends StatelessWidget {
   final LigneFacture ligne;
 
-  const ProductDetailsRow({required this.ligne});
+  const ProductDetailsRow({Key? key, required this.ligne}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -146,3 +141,5 @@ class ProductDetailsRow extends StatelessWidget {
     );
   }
 }
+
+

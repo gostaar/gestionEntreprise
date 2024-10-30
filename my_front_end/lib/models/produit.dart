@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class Produit {
   final int produitId;
   final String nomProduit;
@@ -5,7 +7,6 @@ class Produit {
   final double prix;
   final int quantiteEnStock;
   final String categorie;
-  final DateTime dateAjout;
 
   Produit({
     required this.produitId,
@@ -14,7 +15,6 @@ class Produit {
     required this.prix,
     required this.quantiteEnStock,
     required this.categorie,
-    required this.dateAjout,
   });
 
   factory Produit.fromJson(Map<String, dynamic> json) {
@@ -38,7 +38,17 @@ class Produit {
       prix: prixValue, // Utilisez la valeur convertie
       quantiteEnStock: json['quantite_en_stock'],
       categorie: json['categorie'],
-      dateAjout: DateTime.parse(json['date_ajout']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return{
+      //'produit_id': produitId,
+      'nom_produit': nomProduit,
+      'description': description,
+      'prix': prix,
+      'quantite_en_stock': quantiteEnStock,
+      'categorie': categorie,
+    };
   }
 }

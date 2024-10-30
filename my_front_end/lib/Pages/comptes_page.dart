@@ -49,8 +49,8 @@ class _ComptesPageState extends State<ComptesPage> {
                   itemBuilder: (context, index) {
                     final compte = comptes[index];
                     return ListTile(
-                      title: Text('${compte.nomCompte} ${compte.typeCompte}'), // Utilisez les propriétés du modèle
-                      subtitle: Text('${compte.solde} €'), // Assurez-vous d'afficher le solde correctement
+                      title: Text('${compte.nomCompte} ${compte.typeCompte}'), 
+                      subtitle: Text('${compte.solde} €'), 
                     );
                   },
                 ),
@@ -62,7 +62,7 @@ class _ComptesPageState extends State<ComptesPage> {
             builder: (BuildContext context) {
               return Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: AddCompteForm(), // Appelle un widget contenant le formulaire d'ajout
+                child: AddCompteForm(), 
               );
             },
           );

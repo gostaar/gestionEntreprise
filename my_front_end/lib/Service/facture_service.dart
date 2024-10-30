@@ -10,7 +10,6 @@ class FactureService {
     final response = await http.get(Uri.parse('$apiUrl/factures'));
 
     if (response.statusCode == 200) {
-      // Traitez la réponse JSON ici pour convertir en liste de Facture
       List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map((facture) => Facture.fromJson(facture)).toList();
     } else {
@@ -31,7 +30,6 @@ class FactureService {
         return [];
       }
     } catch (e) {
-      // Gérer les erreurs ici (par exemple, journaliser l'erreur ou lancer une exception)
       print('Erreur lors de la récupération des lignes de facture: $e');
       return [];
     }

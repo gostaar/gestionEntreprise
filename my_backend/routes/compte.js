@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // Assurez-vous d'importer votre instance de pool
+const pool = require('../db'); 
 
-// Route pour obtenir tous les clients
 router.get('/', async (req, res) => {
     try {
       const result = await pool.query('SELECT * FROM Comptes');
