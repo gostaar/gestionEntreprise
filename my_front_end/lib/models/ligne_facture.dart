@@ -1,5 +1,3 @@
-import 'produit.dart';
-
 class LigneFacture {
   final int ligneId;
   final int factureId;

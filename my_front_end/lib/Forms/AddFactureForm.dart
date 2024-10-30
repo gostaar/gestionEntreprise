@@ -90,7 +90,7 @@ class _AddFactureFormState extends State<AddFactureForm> {
     int lastFactureId = await _getLastFactureId()+1;
     
     try {
-      final response = await http.post(
+      await http.post(
         Uri.parse('$apiUrl/factures'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({

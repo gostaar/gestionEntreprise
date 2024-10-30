@@ -45,7 +45,7 @@ class _AddClientFormState extends State<AddClientForm> {
         pays: _controllers[7].text,
         numeroTva: _controllers[8].text,
       );
-      final response = await http.post(
+      await http.post(
         Uri.parse('$apiUrl/clients'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(newClient.toJson()),

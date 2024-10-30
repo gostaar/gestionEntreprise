@@ -65,5 +65,21 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.get('/client/:clientId', async (req, res) => {
+  const { clientId } = req.params;
+
+  try {
+    // Utilisez une requête SQL pour obtenir les factures par clientId
+    const result = await pool.query('SELECT * FROM Factures WHERE client_id = $1', [clientId]);
+    
+
+    
+    // Renvoyez les factures trouvées
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des factures' });
+  }
+});
 
 module.exports = router;

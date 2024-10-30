@@ -20,10 +20,10 @@ class _FacturesPageState extends State<FacturesPage> {
   @override
   void initState() {
     super.initState();
-    refreshFactures();
+    _refreshFactures();
   }
 
-  Future<void> refreshFactures() async {
+  Future<void> _refreshFactures() async {
     try {
       final factureService = FactureService();
       final factures = await factureService.fetchFactures();
@@ -52,7 +52,7 @@ class _FacturesPageState extends State<FacturesPage> {
         padding: const EdgeInsets.all(16.0),
         child: AddFactureForm(),
       ),
-    ).then((_) => refreshFactures());
+    ).then((_) => _refreshFactures());
   }
 
   void _navigateToDetailPage(BuildContext context, Facture facture) async {

@@ -44,4 +44,15 @@ class FactureService {
       throw Exception('Erreur lors de la récupération des données: ${response.statusCode}');
     }
   }
+
+  static Future<List<Facture>> getFacturesByClientId(int clientId) async {
+    final response = await http.get(Uri.parse('$apiUrl/factures/client/$clientId'));
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((facture) => Facture.fromJson(facture)).toList();
+    } else {
+      throw Exception('Erreur lors de la récupération des factures');
+    }
+  }
 }

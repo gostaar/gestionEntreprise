@@ -1,5 +1,4 @@
 import 'dart:convert'; // Pour utiliser jsonEncode
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -40,8 +39,7 @@ class _AddProduitFormState extends State<AddProduitForm> {
           );
           return; 
         }
-      final int lastProduitId = await produitService.getLastProduitId();
-      final newProduitId = lastProduitId +1;
+
       double finalPrix = double.tryParse(_prixController.text)?? 0.0;
       int finalQuantite = int.tryParse(quantite_en_stockController.text)?? 0;
 
@@ -54,7 +52,7 @@ class _AddProduitFormState extends State<AddProduitForm> {
         categorie: categorie ?? 'Non spécifiée',
       );
 
-      final response = await http.post(
+      await http.post(
         Uri.parse('$apiUrl/produits'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(newProduit.toJson()),

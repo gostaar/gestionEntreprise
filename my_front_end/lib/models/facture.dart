@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class Facture {
   final int id;
   final int clientId;
