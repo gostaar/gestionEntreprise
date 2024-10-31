@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/models/client.dart';
+import 'package:my_first_app/models/compte.dart';
 import 'package:my_first_app/models/produit.dart';
 
 //Bouton avec action
@@ -13,8 +14,8 @@ Widget actionButton(String text, VoidCallback action) {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 12, // Taille de la police
-          fontWeight: FontWeight.bold, // Gras,
+          fontSize: 12, 
+          fontWeight: FontWeight.bold,
         ),
       ),
     ));
@@ -24,18 +25,18 @@ Widget textButtonDangerClient(List<Client> arg, String text) {
   return arg.isEmpty
       ? Text(
           text,
-          style: TextStyle(color: Colors.red), // Correction de la syntaxe ici
+          style: TextStyle(color: Colors.red), 
         )
-      : SizedBox.shrink(); // Retourne un widget vide si arg n'est pas vide
+      : SizedBox.shrink(); 
 }
 
 Widget textButtonDangerProduit(List<Produit> arg, String text) {
   return arg.isEmpty
       ? Text(
           text,
-          style: TextStyle(color: Colors.red), // Correction de la syntaxe ici
+          style: TextStyle(color: Colors.red), 
         )
-      : SizedBox.shrink(); // Retourne un widget vide si arg n'est pas vide
+      : SizedBox.shrink(); 
 }
 
 //Date Picker
@@ -82,10 +83,10 @@ Widget clientDropdown(int? selectedClient, String text,
               child: Text(client.nom),
             );
           }).toList()
-        : [], // Aucune entrée si clients est vide
+        : [], 
     onChanged: clients.isNotEmpty
         ? onChanged
-        : null, // Désactiver le Dropdown si clients est vide
+        : null, 
   );
 }
 
@@ -102,10 +103,10 @@ Widget produitDropdown(int? selectedProduit, String text,
               child: Text(produit.nomProduit),
             );
           }).toList()
-        : [], // Aucune entrée si clients est vide
+        : [],
     onChanged: produits.isNotEmpty
         ? onChanged
-        : null, // Désactiver le Dropdown si clients est vide
+        : null, 
   );
 }
 
@@ -147,6 +148,61 @@ Widget customElevatedButton({
   return ElevatedButton(
     onPressed: isEnabled ? onPressed : null,
     child: Text(buttonText),
+  );
+}
+
+
+Widget buildComptesList(List<Compte> comptes) {
+  if (comptes.isEmpty) {
+    return Center(child: Text('Aucun compte disponible'));
+  }
+
+  return ListView.builder(
+    itemCount: comptes.length,
+    itemBuilder: (context, index) {
+      final compte = comptes[index];
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Card(
+          elevation: 4,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(child:
+                  Text(
+                    compte.nomCompte,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),                
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Text('Débit', style: TextStyle(fontSize: 16)),
+                        SizedBox(height: 4),
+                        Text('${compte.montantDebit.toStringAsFixed(2)} €', style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text('Crédit', style: TextStyle(fontSize: 16)),
+                        SizedBox(height: 4),
+                        Text('${compte.montantCredit.toStringAsFixed(2)} €', style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
   );
 }
 

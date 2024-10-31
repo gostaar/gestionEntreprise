@@ -38,37 +38,37 @@ class HomePage extends StatelessWidget {
       'icon': Icons.people,
       'title': 'Clients',
       'page': ClientsPage(),
-      'color': const Color.fromARGB(255, 185, 95, 145)
+      //'color': const Color.fromARGB(255, 185, 95, 145)
     },
     {
       'icon': Icons.receipt,
       'title': 'Factures',
       'page': FacturesPage(),
-      'color': const Color.fromARGB(255, 185, 95, 145)
+      //'color': const Color.fromARGB(255, 185, 95, 145)
     },
     {
       'icon': Icons.receipt,
       'title': 'Produits',
       'page': ProduitsPage(),
-      'color': const Color.fromARGB(255, 185, 95, 145)
+      //'color': const Color.fromARGB(255, 185, 95, 145)
     },
     {
       'icon': Icons.account_balance_wallet,
       'title': 'Comptes',
       'page': ComptesPage(),
-      'color': Colors.green
+      //'color': Colors.green
     },
     {
       'icon': Icons.swap_horiz,
       'title': 'Transactions',
       'page': TransactionsPage(),
-      'color': Colors.green
+      //'color': Colors.green
     },
     {
       'icon': Icons.settings,
       'title': 'Paramètres',
       'page': ParametresPage(),
-      'color': const Color.fromARGB(255, 97, 95, 95)
+      //'color': const Color.fromARGB(255, 97, 95, 95)
     },
   ];
 
@@ -111,8 +111,8 @@ class HomePage extends StatelessWidget {
                     Icon(
                       menuItem['icon'],
                       size: 50,
-                      color: menuItem[
-                          'color'], // Applique la couleur personnalisée
+                      //color: menuItem[
+                      //    'color'], // Applique la couleur personnalisée
                     ),
                     SizedBox(height: 10),
                     Text(

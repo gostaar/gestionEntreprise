@@ -42,10 +42,6 @@ class _ClientsPageState extends State<ClientsPage> {
     try {
       final List<Facture> factures = await FactureService.getFacturesByClientId(client.clientId);
       Navigator.pop(context);
-      if (factures == null || factures.isEmpty || factures == []) {
-        _showInfo(context, 'Aucune facture trouvée pour ce client.');
-        return; 
-      }
 
       List<LigneFacture> lignesFacturesData = [];
       for (var facture in factures) {
@@ -57,9 +53,9 @@ class _ClientsPageState extends State<ClientsPage> {
         context,
         MaterialPageRoute(
           builder: (context) => ClientDetailPage(
-            factures: factures,
+            factures: factures ?? [],
             client: client, 
-            lignesFacture: lignesFacturesData, 
+            //lignesFacture: lignesFacturesData ?? [], 
           ),
         ),
       );

@@ -95,7 +95,7 @@ class _FacturesPageState extends State<FacturesPage> {
                 final facture = _factures[index];
                 return ListTile(
                   title: Text('Numéro de Facture: ${facture.id}'),
-                  subtitle: Text('Statut: ${facture.statut}'),
+                  subtitle: Text('Statut: ${facture.statut ?? 'Non renseigné'}'),
                   onTap: () => _navigateToDetailPage(context, facture),
                 );
               },

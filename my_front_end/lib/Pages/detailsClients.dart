@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/facture_client_page.dart';
+import 'package:my_first_app/Pages/detailsFacture.dart';
+import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/facture.dart';
-import 'package:my_first_app/models/ligne_facture.dart';
 import 'package:my_first_app/Widget/Functions.dart';
+import 'package:my_first_app/models/ligne_facture.dart';
 
 class ClientDetailPage extends StatelessWidget {
   final Client client; 
   final List<Facture> factures;
-  final List<LigneFacture> lignesFacture;
-  final factureService = FactureService();
-  
+
   ClientDetailPage({
     required this.client,
     required this.factures,
-    required this.lignesFacture,
   });
-  
 
-void _showError(BuildContext context, String message) {
+  void _showError(BuildContext context, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -28,7 +25,7 @@ void _showError(BuildContext context, String message) {
     );
   }
 
-   void _navigateToFacturesPage(BuildContext context) async {
+  void _navigateToFacturesPage(BuildContext context, Facture f) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -36,83 +33,81 @@ void _showError(BuildContext context, String message) {
     );
 
     try {
-      Navigator.pop(context); 
+      final lignesFacture = await _fetchLignesFacture(f.id);
+      final clientDetails = await ClientService.getClientById(f.clientId);
+
+      Navigator.pop(context);
+
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => FactureClientDetailPage(
-            client: client,
+          builder: (context) => FactureDetailPage(
+            facture: f,
+            lignesFacture: lignesFacture,
+            client: clientDetails,
           ),
         ),
       );
     } catch (error) {
-      Navigator.pop(context);
+      Navigator.pop(context); 
       _showError(context, 'Erreur lors de la récupération des factures: $error');
     }
   }
 
-  void _showClientDetails(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Fiche de ${client.nom}'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('Nom: ${client.nom}'),
-              Text('Email: ${client.email}'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Fermer'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+  // Méthode pour récupérer les lignes de facture
+  Future<List<LigneFacture>> _fetchLignesFacture(int factureId) async {
+    final factureService = FactureService();
+    return await factureService.getLignesFacture(factureId);
+  }
+
+  Widget buildFacturesTab(BuildContext context, List<Facture> factures, Function(BuildContext, Facture) onNavigate) {
+    if (factures.isEmpty) {
+      return Column(
+        children: [
+          SizedBox(height: 16),
+          Text(
+            'Aucune facture pour ce client',
+            textAlign: TextAlign.center,
           ),
         ],
-      ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: factures.length,
+      itemBuilder: (context, index) {
+        final facture = factures[index];
+        
+        return ListTile(
+          title: Text('Facture ${facture.id}'),
+          subtitle: FactureInfoSection(facture: facture),
+          onTap: () => onNavigate(context, facture),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Fiche de ${client.nom}'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-                ElevatedButton(
-                  onPressed: () => _showClientDetails(context),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0), 
-                    textStyle: TextStyle(fontSize: 20),
-                  ),
-                  child: Text('Détails'),
-                ),
-                SizedBox(height: 16), 
-                ElevatedButton(
-                  onPressed: () => _navigateToFacturesPage(context),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0), 
-                    textStyle: TextStyle(fontSize: 20), 
-                  ),
-                  child: Text('Factures'),
-                ),
+    return DefaultTabController(
+      length: 2, // Deux onglets : Détails et Factures
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Fiche de ${client.nom}'),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: 'Détails'),
+              Tab(text: 'Factures'),
             ],
           ),
+        ),
+        body: TabBarView(
+          children: [
+            clientDetailWidget(context, client),
+            buildFacturesTab(context, factures, _navigateToFacturesPage),
+          ],
         ),
       ),
     );
   }
-
-  
-
-
 }

@@ -41,7 +41,7 @@ class FactureDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Détails de la Facture #${facture.id}'),
+        title: Text('Facture ${facture.id}'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,7 +68,7 @@ class FactureDetailPage extends StatelessWidget {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('Erreur lors du chargement des lignes de facture'));
+                      return Center(child: Text('Aucun produits renseigné'));
                     }
 
                     return Column(children: snapshot.data!);
