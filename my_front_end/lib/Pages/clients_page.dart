@@ -53,7 +53,7 @@ class _ClientsPageState extends State<ClientsPage> {
         context,
         MaterialPageRoute(
           builder: (context) => ClientDetailPage(
-            factures: factures ?? [],
+            factures: factures,
             client: client, 
             //lignesFacture: lignesFacturesData ?? [], 
           ),

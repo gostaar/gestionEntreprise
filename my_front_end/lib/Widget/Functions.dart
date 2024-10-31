@@ -158,11 +158,11 @@ class ProductDetailsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int quantite = ligne.quantite ?? 0; // Default to 0 if null
+    final int quantite = ligne.quantite; // Default to 0 if null
     final String formattedQuantite = NumberFormat.decimalPattern('fr_FR').format(quantite);
-    final double prixUnitaire = double.tryParse(ligne.prixUnitaire ?? '') ?? 0.0; // Default to 0.0 if null
+    final double prixUnitaire = double.tryParse(ligne.prixUnitaire) ?? 0.0; // Default to 0.0 if null
     final String formattedPrixUnitaire = NumberFormat.currency(locale: 'fr_FR', symbol: '€').format(prixUnitaire);
-    final double sousTotal = double.tryParse(ligne.sousTotal ?? '') ?? 0.0; // Default to 0.0 if null
+    final double sousTotal = double.tryParse(ligne.sousTotal) ?? 0.0; // Default to 0.0 if null
     final String formattedSousTotal = NumberFormat.currency(locale: 'fr_FR', symbol: '€').format(sousTotal);
 
     return Padding(
