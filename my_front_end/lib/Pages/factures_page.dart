@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/facture.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
 import 'package:my_first_app/Forms/AddFactureForm.dart';
-import 'package:my_first_app/Pages/detailsFacture.dart';
+import 'package:my_first_app/Pages/Details/detailsFacture.dart';
 import 'package:my_first_app/Widget/Functions.dart';
 
 class FacturesPage extends StatefulWidget {
@@ -14,6 +15,8 @@ class FacturesPage extends StatefulWidget {
 
 class _FacturesPageState extends State<FacturesPage> {
   List<Facture> _factures = [];
+   List<Facture> _filteredFactures = []; // Pour afficher les factures filtrées
+  final TextEditingController _searchController = TextEditingController();
   Map<int, Client> clients = {};
   final factureService = FactureService();
 
@@ -21,17 +24,45 @@ class _FacturesPageState extends State<FacturesPage> {
   void initState() {
     super.initState();
     _refreshFactures();
+        _searchController.addListener(_filterFactures);
+
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+
   Future<void> _refreshFactures() async {
-    try {
-      final factureService = FactureService();
+    try {      
       final factures = await factureService.fetchFactures();
       setState(() {
         _factures = factures;
+        _filteredFactures = factures;
+
       });
     } catch (error) {
       _showError(context, 'Erreur lors de la récupération des factures: $error');
+    }
+  }
+
+  void _filterFactures() {
+    final query = _searchController.text;
+    if (query.isNotEmpty) {
+      final priceQuery = double.tryParse(query); // Essaie de convertir le texte en double
+      setState(() {
+        _filteredFactures = _factures.where((facture) {
+        // Vérifie si le nom du produit contient la recherche ou si le prix contient la recherche
+        return facture.id.toString().contains(query) || 
+               (priceQuery != null && facture.montantTotal.toString().contains(query));
+      }).toList();
+      });
+    } else {
+      setState(() {
+        _filteredFactures = _factures;
+      });
     }
   }
 
@@ -86,16 +117,42 @@ class _FacturesPageState extends State<FacturesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Factures')),
-      body: _factures.isEmpty
-          ? Center(child: CircularProgressIndicator())
+      appBar: AppBar(
+        title: Text('Factures'),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Numéro / Prix',
+                hintStyle: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ),
+        ),
+      ),
+      body: _filteredFactures.isEmpty
+          ? Center(child: Text('Aucune facture trouvée.'))
           : ListView.builder(
-              itemCount: _factures.length,
+              itemCount: _filteredFactures.length,
               itemBuilder: (context, index) {
-                final facture = _factures[index];
+                final facture = _filteredFactures[index];
+                String formattedPrice = facture.montantTotal != null 
+                  ? NumberFormat.simpleCurrency(locale: 'fr_FR').format(facture.montantTotal)
+                  : 'Indisponible';
                 return ListTile(
                   title: Text('Numéro de Facture: ${facture.id}'),
-                  subtitle: Text('Statut: ${facture.statut ?? 'Non renseigné'}'),
+                  subtitle: Text('Statut: ${facture.statut ?? 'Non renseigné'}\nMontant: $formattedPrice'),
                   onTap: () => _navigateToDetailPage(context, facture),
                 );
               },

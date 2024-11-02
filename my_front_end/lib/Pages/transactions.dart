@@ -9,7 +9,7 @@ class TransactionsPage extends StatelessWidget {
       ),
       body: Center(
         child: Text(
-          'Voici la page des transactions',
+          'Voici la page des Transactions',
           style: TextStyle(fontSize: 24),
         ),
       ),

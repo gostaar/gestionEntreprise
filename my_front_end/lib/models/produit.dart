@@ -16,11 +16,6 @@ class Produit {
   });
 
   factory Produit.fromJson(Map<String, dynamic> json) {
-    // Afficher le type et la valeur avant conversion
-    print(
-        'Prix avant conversion: ${json['prix']} (${json['prix'].runtimeType})');
-
-    // Conversion avec gestion des erreurs
     double prixValue;
     try {
       prixValue = double.parse(json['prix'].toString());

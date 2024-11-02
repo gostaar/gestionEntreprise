@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/detailsClients.dart';
+import 'package:my_first_app/Pages/Details/detailsClients.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
 import 'package:my_first_app/models/client.dart';
@@ -14,24 +14,48 @@ class ClientsPage extends StatefulWidget {
 
 class _ClientsPageState extends State<ClientsPage> {
   List<Client> clients = []; 
+    List<Client> filteredClients = [];
   final factureService = FactureService();
+    final TextEditingController searchController = TextEditingController();
+
 
   @override
   void initState() {
     super.initState();
     _loadClients(); 
+    searchController.addListener(_filterClients);
+
   }
   
+ @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   void _loadClients() async {
     try {
       final clientsList = await ClientService.fetchClients();
       setState(() {
         clients = clientsList;
+        filteredClients = clientsList;  // Initialisation de la liste filtrée
       });
     } catch (error) {
       print('Erreur : $error');
     }
   }
+
+   void _filterClients() {
+    final query = searchController.text.toLowerCase();
+    setState(() {
+       filteredClients = clients.where((client) {
+      final clientName = client.nom.toLowerCase();
+      final clientPrenom = client.prenom?.toLowerCase();
+      return clientName.contains(query) || clientPrenom!.contains(query);
+    }).toList();
+    });
+  }
+
 
   void _openDetailsClient(BuildContext context, Client client) async {
     showDialog(
@@ -83,26 +107,48 @@ class _ClientsPageState extends State<ClientsPage> {
     );
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Clients'),
       ),
-      body: clients.isEmpty
-          ? Center(child: CircularProgressIndicator()) 
-          : ListView.builder(
-              itemCount: clients.length, 
-              itemBuilder: (context, index) {
-                final client = clients[index];
-                return ListTile(
-                  title: Text(
-                      '${client.nom} ${client.prenom}'), 
-                  subtitle: Text(client.email ?? ""),
-                  onTap:() => _openDetailsClient(context, client), 
-                );
-              },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Nom / Prénom',
+                hintStyle: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
             ),
+          ),
+          Expanded(
+            child: filteredClients.isEmpty
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: filteredClients.length,
+                    itemBuilder: (context, index) {
+                      final client = filteredClients[index];
+                      return ListTile(
+                        title: Text('${client.nom} ${client.prenom}'),
+                        subtitle: Text('Email: ${client.email ?? "Non renseigné"}\nNuméro client: ${client.clientId}'),
+                        onTap: () => _openDetailsClient(context, client),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await showModalBottomSheet(
@@ -112,7 +158,7 @@ class _ClientsPageState extends State<ClientsPage> {
               return const AddClientModal();
             },
           );
-          if (result == true) { 
+          if (result == true) {
             _loadClients();
           }
         },

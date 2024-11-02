@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_first_app/Forms/AddClientForm.dart';
+import 'package:my_first_app/Forms/AddFournisseurForm.dart';
+import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/fournisseur_service.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/compte.dart';
@@ -68,6 +70,18 @@ class AddClientModal extends StatelessWidget {
   }
 }
 
+class AddFournisseurModal extends StatelessWidget {
+  const AddFournisseurModal({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: AddFournisseurForm(),
+    );
+  }
+}
+
 // Section Info du Client
 class ClientInfoSection extends StatelessWidget {
   final Client client;
@@ -86,11 +100,51 @@ class ClientInfoSection extends StatelessWidget {
   }
 }
 
+class FournisseurInfoSection extends StatelessWidget {
+  final Fournisseur fournisseur;
+
+  const FournisseurInfoSection({Key? key, required this.fournisseur}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Fournisseur: ${fournisseur.nom} ${fournisseur.prenom}', style: TextStyle(fontSize: 20)),
+        Text('Email: ${fournisseur.email}', style: TextStyle(fontSize: 16)),
+      ],
+    );
+  }
+}
+
 // Section Info de la Facture
 class FactureInfoSection extends StatelessWidget {
   final Facture facture;
 
   const FactureInfoSection({Key? key, required this.facture}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final double montantTotal = facture.montantTotal ?? 0.0; 
+    final String formattedMontant = NumberFormat.currency(locale: 'fr_FR', symbol: '€').format(montantTotal);
+    String formattedDate = facture.dateFacture != null
+      ? DateFormat('dd/MM/yyyy').format(facture.dateFacture!)
+      : 'Date non renseignée';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Montant Total: ${formattedMontant}\nDate: ${formattedDate}'),
+        Divider(thickness: 1, color: Colors.grey[400]),   
+      ],
+    );
+  }
+}
+
+class FactureFournisseurInfoSection extends StatelessWidget {
+  final FactureFournisseur facture;
+
+  const FactureFournisseurInfoSection({Key? key, required this.facture}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -204,6 +258,28 @@ Widget clientDetailWidget(BuildContext context, Client client) {
   );
 }
 
+Widget fournisseurDetailWidget(BuildContext context, Fournisseur fournisseur) {
+  return SingleChildScrollView(
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          buildDetailRow('Nom', fournisseur.nom),
+          buildDetailRow('Prénom', fournisseur.prenom),
+          buildDetailRow('Email', fournisseur.email),
+          buildDetailRow('Téléphone', fournisseur.telephone),
+          buildDetailRow('Adresse', fournisseur.adresse),
+          buildDetailRow('Ville', fournisseur.ville),
+          buildDetailRow('Code postal', fournisseur.codePostal),
+          buildDetailRow('Pays', fournisseur.pays),
+          buildDetailRow('Numéro de TVA', fournisseur.numeroTva),
+        ],
+      ),
+    ),
+  );
+}
+
 // Fonction auxiliaire pour créer une ligne de détail avec un label en gras et alignement vertical
 Widget buildDetailRow(String label, String? value) {
   return Padding(
@@ -248,63 +324,36 @@ Widget buildFacturesTab(BuildContext context, List<Facture> factures, Function n
 }
 
 Future<List<Compte>> createAccountsFromFournisseurInvoices(List<FactureFournisseur> fetchedFacturesFournisseurs) async {
-  List<Compte> comptes = [];
+  Map<String, Map<String, double>> compteMap = {}; // Map pour agréger les montants
+  Map<String, int> fournisseurIds = {};
 
   for (var factureFournisseur in fetchedFacturesFournisseurs) {
     // Récupérer le fournisseur à partir de son ID
     Fournisseur fournisseur = await FournisseurService.getFournisseursById(factureFournisseur.fournisseurId);
-    // Supposons que montantDebit et montantCredit soient extraits de la facture ou définis par défaut
-    double montantDebit = 0.0; // Vous pouvez définir cela selon votre logique
-    double montantCredit = factureFournisseur.montantTotal ?? 0.0; // Montant total de la facture
-    String dateCreation = DateTime.now().toIso8601String(); // Date actuelle
 
-
-    comptes.add(Compte(
-      compteId: fournisseur.fournisseurId, // ou un ID approprié pour le compte
-      nomCompte: fournisseur.nom,
-      typeCompte: 'Fournisseur',
-      montantDebit: montantDebit,
-      montantCredit: montantCredit,
-      dateCreation: dateCreation,
-    ));
-  }
-
-  return comptes;
-}
-
-
-List<Compte> createAccountsFromInvoices(List<Facture> factures, List<Client> clients) {
-  Map<String, Map<String, double>> compteMap = {}; // Map pour stocker débit et crédit par client
-
-  Map<int, String> clientMap = {};
-  for (var client in clients) {
-    clientMap[client.clientId] = '${client.nom} ${client.prenom}';
-  }
-
-  for (var facture in factures) {
-    String nomClient = clientMap[facture.clientId] ?? 'Client Inconnu';
-    double montant = facture.montantTotal ?? 0.0;
-
-    // Initialiser le compte si nécessaire
-    if (!compteMap.containsKey(nomClient)) {
-      compteMap[nomClient] = {'Débit': 0.0, 'Crédit': 0.0};
+    // Initialiser l’entrée dans la Map si elle n'existe pas encore
+    if (!compteMap.containsKey(fournisseur.nom)) {
+      compteMap[fournisseur.nom] = {'Débit': 0.0, 'Crédit': 0.0, };
+      fournisseurIds[fournisseur.nom] = fournisseur.fournisseurId;
     }
 
-    // Ajouter au bon montant selon le statut de la facture
-    if (facture.statut == 'Payée') {
-      compteMap[nomClient]!['Crédit'] = (compteMap[nomClient]!['Crédit'] ?? 0) + montant;
+    // Calculer le montant à ajouter
+    double montant = factureFournisseur.montantTotal ?? 0.0;
+
+    // Ajouter le montant au crédit ou au débit selon la logique métier
+    if (factureFournisseur.statut == 'Payée') {
+      compteMap[fournisseur.nom]!['Débit'] = (compteMap[fournisseur.nom]!['Débit'] ?? 0.0) + montant;
     } else {
-      compteMap[nomClient]!['Débit'] = (compteMap[nomClient]!['Débit'] ?? 0) + montant;
+      compteMap[fournisseur.nom]!['Crédit'] = (compteMap[fournisseur.nom]!['Crédit'] ?? 0.0) + montant;
     }
-  }
-
+}
   // Convertir le Map en liste de comptes
   List<Compte> comptes = [];
-  compteMap.forEach((nomClient, montants) {
+  compteMap.forEach((nomFournisseur, montants) {
     comptes.add(Compte(
-      compteId: comptes.length + 1,
-      nomCompte: nomClient,
-      typeCompte: 'Client',
+      compteId: fournisseurIds[nomFournisseur]!,
+      nomCompte: nomFournisseur,
+      typeCompte: 'Fournisseur',
       montantDebit: montants['Débit']!,
       montantCredit: montants['Crédit']!,
       dateCreation: DateTime.now().toIso8601String(),
@@ -313,3 +362,43 @@ List<Compte> createAccountsFromInvoices(List<Facture> factures, List<Client> cli
 
   return comptes;
 }
+
+
+
+
+Future<List<Compte>> createAccountsFromInvoices(List<Facture> fetchedFactures) async {
+  Map<String, Map<String, double>> compteMap = {}; // Map pour stocker les montants par client
+  Map<String, int> clientIds = {};
+
+  for (var factureClient in fetchedFactures) {
+    Client client = await ClientService.getClientById(factureClient.clientId);
+
+    // Initialiser le client dans la map si ce n'est pas déjà fait
+    if (!compteMap.containsKey(client.nom)) {
+      compteMap[client.nom] = {'Débit': 0.0, 'Crédit': 0.0};
+      clientIds[client.nom] = client.clientId;
+    }
+
+    // Ajouter les montants en fonction du statut de la facture
+    if (factureClient.statut == 'Payée') {
+      compteMap[client.nom]!['Débit'] = compteMap[client.nom]!['Débit']! + (factureClient.montantTotal ?? 0.0);
+    } else {
+      compteMap[client.nom]!['Crédit'] = compteMap[client.nom]!['Crédit']! + (factureClient.montantTotal ?? 0.0);
+    }
+  }
+    // Convertir le Map en liste de comptes
+    List<Compte> comptes = [];
+    compteMap.forEach((nomClient, montants) {
+      comptes.add(Compte(
+        compteId: clientIds[nomClient]!, // Assurez-vous que `client.clientId` est défini dans chaque boucle.
+        nomCompte: nomClient,
+        typeCompte: 'Client',
+        montantDebit: montants['Débit']!,
+        montantCredit: montants['Crédit']!,
+        dateCreation: DateTime.now().toIso8601String(),
+      ));
+    });
+
+    return comptes;
+  }
+

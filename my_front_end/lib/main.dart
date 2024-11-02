@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/produits_page.dart';
-import 'Pages/clients_page.dart'; // Importez vos autres pages ici
+import 'package:my_first_app/Pages/Menu/clientsMain_page.dart';
+import 'package:my_first_app/Pages/Menu/fournisseurMain_page.dart';
+import 'package:my_first_app/Pages/transactions.dart';
 import 'Pages/comptes_page.dart';
-import 'Pages/factures_page.dart';
-import 'Pages/transactions_page.dart';
 import 'Pages/parametres_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -22,8 +21,8 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [
-        Locale('en'), // English
-        Locale('fr'), // Spanish
+        Locale('en'), 
+        Locale('fr'), 
       ],
       home:
           HomePage(), // Page principale avec un menu de navigation sur l'écran d'accueil
@@ -32,43 +31,31 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  // Liste des icônes, titres et couleurs pour le menu
   final List<Map<String, dynamic>> _menuItems = [
     {
       'icon': Icons.people,
       'title': 'Clients',
-      'page': ClientsPage(),
-      //'color': const Color.fromARGB(255, 185, 95, 145)
+      'page': ClientMainPage(),
     },
     {
-      'icon': Icons.receipt,
-      'title': 'Factures',
-      'page': FacturesPage(),
-      //'color': const Color.fromARGB(255, 185, 95, 145)
-    },
-    {
-      'icon': Icons.receipt,
-      'title': 'Produits',
-      'page': ProduitsPage(),
-      //'color': const Color.fromARGB(255, 185, 95, 145)
+      'icon': Icons.people,
+      'title': 'Fournisseurs',
+      'page': FournisseurMainPage(),
     },
     {
       'icon': Icons.account_balance_wallet,
       'title': 'Comptes',
       'page': ComptesPage(),
-      //'color': Colors.green
     },
     {
       'icon': Icons.swap_horiz,
       'title': 'Transactions',
       'page': TransactionsPage(),
-      //'color': Colors.green
     },
     {
       'icon': Icons.settings,
       'title': 'Paramètres',
       'page': ParametresPage(),
-      //'color': const Color.fromARGB(255, 97, 95, 95)
     },
   ];
 
@@ -92,7 +79,6 @@ class HomePage extends StatelessWidget {
             final menuItem = _menuItems[index];
             return GestureDetector(
               onTap: () {
-                // Navigue vers la page correspondante lorsqu'on appuie
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -111,8 +97,6 @@ class HomePage extends StatelessWidget {
                     Icon(
                       menuItem['icon'],
                       size: 50,
-                      //color: menuItem[
-                      //    'color'], // Applique la couleur personnalisée
                     ),
                     SizedBox(height: 10),
                     Text(
@@ -121,7 +105,7 @@ class HomePage extends StatelessWidget {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: menuItem[
-                            'color'], // Applique la couleur personnalisée
+                            'color'], 
                       ),
                     ),
                   ],

@@ -1,6 +1,5 @@
 import 'dart:convert'; 
 import 'package:http/http.dart' as http; 
-import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/constants.dart';
 import 'package:my_first_app/models/fournisseurs.dart';
 
@@ -18,9 +17,9 @@ class FournisseurService {
 
    static Future<List<Fournisseur>> fetchFournisseurs() async {
     final response = await http.get(Uri.parse('$apiUrl/fournisseurs'));
-
     if (response.statusCode == 200) {
       final List<dynamic> jsonData = json.decode(response.body);
+
       return jsonData.map((json) => Fournisseur.fromJson(json)).toList();
     } else {
       throw Exception('Erreur lors du chargement des fournisseurs');

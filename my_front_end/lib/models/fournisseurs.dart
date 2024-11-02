@@ -25,7 +25,7 @@ class Fournisseur {
 
   factory Fournisseur.fromJson(Map<String, dynamic> json) {
     return Fournisseur(
-        fournisseurId: json['fournisseur_Id'],
+        fournisseurId: json['fournisseur_id'],
         nom: json['nom'],
         prenom: json['prenom'] as String?,
         email: json['email'] as String?,
@@ -40,7 +40,7 @@ class Fournisseur {
   // Méthode toJson pour convertir l'objet Client en Map
   Map<String, dynamic> toJson() {
     return {
-      'fournisseur_Id': fournisseurId,
+      'fournisseur_id': fournisseurId,
       'nom': nom,
       'prenom': prenom,
       'email': email,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_first_app/Forms/AddProduitForm.dart';
 import 'package:my_first_app/Widget/Functions.dart';
 import 'package:my_first_app/models/produit.dart';
@@ -11,12 +12,21 @@ class ProduitsPage extends StatefulWidget {
 
 class _ProduitsPageState extends State<ProduitsPage> {
   List<Produit> produits = []; 
+  List<Produit> _filteredProduits = [];
+  final TextEditingController _searchController = TextEditingController();
   final produitService = ProduitService();
 
   @override
   void initState() {
     super.initState();
     _fetchProduits(); 
+    _searchController.addListener(_filterProduits);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchProduits() async {
@@ -24,21 +34,40 @@ class _ProduitsPageState extends State<ProduitsPage> {
       final fetchedProduits = await produitService.fetchProduits();
       setState(() {
         produits = fetchedProduits;
+        _filteredProduits = produits; // Initialise la liste filtrée avec tous les produits
       });
     } catch (e) {
       print('Erreur lors de la récupération des produits : $e');
     }
   }
 
+void _filterProduits() {
+  final query = _searchController.text;
+  if (query.isNotEmpty) {
+    final priceQuery = double.tryParse(query); // Essaie de convertir le texte en double
+    setState(() {
+      _filteredProduits = produits.where((produit) {
+        // Vérifie si le nom du produit contient la recherche ou si le prix contient la recherche
+        return produit.nomProduit.contains(query) || 
+               (priceQuery != null && produit.prix.toString().contains(query));
+      }).toList();
+    });
+  } else {
+    setState(() {
+      _filteredProduits = produits;
+    });
+  }
+}
+
   Future<void> _refreshProduits() async {
     try {
-      final produitService = ProduitService();
       final _produits = await produitService.fetchProduits();
       setState(() {
         produits = _produits;
+        _filteredProduits = produits; // Réinitialise la liste filtrée
       });
     } catch (error) {
-      _showError(context, 'Erreur lors de la récupération des factures: $error');
+      _showError(context, 'Erreur lors de la récupération des produits: $error');
     }
   }
 
@@ -67,18 +96,39 @@ class _ProduitsPageState extends State<ProduitsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Produits'),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Nom / Prix',
+                hintStyle: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
-      body: produits.isEmpty
+      body: _filteredProduits.isEmpty
           ? Center(
               child: Text('Aucun produit disponible'),
             )
           : ListView.builder(
-              itemCount: produits.length, 
+              itemCount: _filteredProduits.length, // Utilise la liste filtrée
               itemBuilder: (context, index) {
-                final produit = produits[index];
+                final produit = _filteredProduits[index];
+                String formattedPrice = NumberFormat.simpleCurrency(locale: 'fr_FR').format(produit.prix);
                 return ListTile(
                   title: Text('Nom : ${produit.nomProduit}'),
-                  subtitle: Text('Description : ${produit.description}'),
+                  subtitle: Text('Description : ${produit.description}\nPrix : $formattedPrice'),
                   onTap: () {
                     // Action lors du clic sur un produit
                     // Vous pouvez ajouter une page de détails ou d'édition ici

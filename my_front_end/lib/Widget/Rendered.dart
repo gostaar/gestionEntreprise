@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/Service/facture_fournisseur_service.dart';
+import 'package:my_first_app/Service/facture_service.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/compte.dart';
+import 'package:my_first_app/models/facture.dart';
+import 'package:my_first_app/models/factureFournisseur.dart';
+import 'package:my_first_app/models/fournisseurs.dart';
 import 'package:my_first_app/models/produit.dart';
+
+import '../Pages/Intermediaire/facture_client_compte_page.dart';
+import '../Pages/Intermediaire/facture_fournisseur_compte_page.dart';
 
 //Bouton avec action
 Widget actionButton(String text, VoidCallback action) {
@@ -22,6 +30,15 @@ Widget actionButton(String text, VoidCallback action) {
 }
 
 Widget textButtonDangerClient(List<Client> arg, String text) {
+  return arg.isEmpty
+      ? Text(
+          text,
+          style: TextStyle(color: Colors.red), 
+        )
+      : SizedBox.shrink(); 
+}
+
+Widget textButtonDangerFournisseur(List<Fournisseur> arg, String text) {
   return arg.isEmpty
       ? Text(
           text,
@@ -90,6 +107,25 @@ Widget clientDropdown(int? selectedClient, String text,
   );
 }
 
+Widget FournisseurDropdown(int? selectedFournisseur, String text,
+    List<Fournisseur> fournisseurs, Function(int?) onChanged) {
+  return DropdownButtonFormField<int>(
+    value: selectedFournisseur,
+    decoration: InputDecoration(labelText: text),
+    items: fournisseurs.isNotEmpty
+        ? fournisseurs.map((Fournisseur) {
+            return DropdownMenuItem<int>(
+              value: Fournisseur.fournisseurId,
+              child: Text(Fournisseur.nom),
+            );
+          }).toList()
+        : [], 
+    onChanged: fournisseurs.isNotEmpty
+        ? onChanged
+        : null, 
+  );
+}
+
 //DropDownClient
 Widget produitDropdown(int? selectedProduit, String text,
     List<Produit> produits, Function(int?) onChanged) {
@@ -152,7 +188,7 @@ Widget customElevatedButton({
 }
 
 
-Widget buildComptesList(List<Compte> comptes) {
+Widget buildComptesList(List<Compte> comptes, String typeCompte, List<Client> clients, List<Fournisseur> fournisseurs) {
   if (comptes.isEmpty) {
     return Center(child: Text('Aucun compte disponible'));
   }
@@ -164,40 +200,45 @@ Widget buildComptesList(List<Compte> comptes) {
 
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Card(
-          elevation: 4,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(child:
-                  Text(
-                    compte.nomCompte,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        child: InkWell(
+          onTap: () {
+            navigateToFacturePage(context, compte, clients, fournisseurs);
+          },
+          child: Card(
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      compte.nomCompte,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),                
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        Text('Débit', style: TextStyle(fontSize: 16)),
-                        SizedBox(height: 4),
-                        Text('${compte.montantDebit.toStringAsFixed(2)} €', style: TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text('Crédit', style: TextStyle(fontSize: 16)),
-                        SizedBox(height: 4),
-                        Text('${compte.montantCredit.toStringAsFixed(2)} €', style: TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Text('Débit', style: TextStyle(fontSize: 16)),
+                          SizedBox(height: 4),
+                          Text('${compte.montantDebit.toStringAsFixed(2)} €', style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text('Crédit', style: TextStyle(fontSize: 16)),
+                          SizedBox(height: 4),
+                          Text('${compte.montantCredit.toStringAsFixed(2)} €', style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -206,3 +247,70 @@ Widget buildComptesList(List<Compte> comptes) {
   );
 }
 
+void navigateToFacturePage(BuildContext context, Compte compte, List<Client> clients, List<Fournisseur> fournisseurs) async {
+  if (compte.typeCompte == 'Client') {
+    final matchingClients = clients.where((c) => c.clientId == compte.compteId);
+    final Client? client = matchingClients.isNotEmpty ? matchingClients.first : null;
+    if (client != null) {
+      // Récupération des factures pour le client
+      try {
+        final List<Facture> facturesClient = await FactureService.getFacturesByClientId(client.clientId);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FacturesClientComptePage(client: client, factures: facturesClient),
+          ),
+        );
+      } catch (error) {
+        print("Erreur lors de la récupération des factures du client : $error");
+        _showError(context, "Erreur lors de la récupération des factures du client");
+      }
+    } else {
+      print("Client non trouvé pour le compte : ${compte.nomCompte}");
+      _showError(context, "Client non trouvé");
+    }
+  } else if (compte.typeCompte == 'Fournisseur') {
+    final matchingFournisseurs = fournisseurs.where((f) => f.fournisseurId == compte.compteId);
+    final Fournisseur? fournisseur = matchingFournisseurs.isNotEmpty ? matchingFournisseurs.first : null;
+    if (fournisseur != null) {
+      // Récupération des factures pour le fournisseur
+      try {
+        final List<FactureFournisseur> facturesFournisseur = await FactureFournisseurService.getFactureFournisseurByFournisseurId(fournisseur.fournisseurId);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FacturesFournisseurComptePage(fournisseur: fournisseur, facturesFournisseur: facturesFournisseur),
+          ),
+        );
+      } catch (error) {
+        print("Erreur lors de la récupération des factures du fournisseur : $error");
+        _showError(context, "Erreur lors de la récupération des factures du fournisseur");
+      }
+    } else {
+      print("Fournisseur non trouvé pour le compte : ${compte.nomCompte}");
+      _showError(context, "Fournisseur non trouvé");
+    }
+  } else {
+    print("Type de compte non reconnu : ${compte.typeCompte}");
+  }
+}
+
+void _showError(BuildContext context, String message) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Erreur"),
+      content: Text(message),
+      actions: [
+        TextButton(
+          child: Text("OK"),
+          onPressed: () {
+            Navigator.of(context).pop(); // Fermer le dialogue
+          },
+        ),
+      ],
+    ),
+  );
+}

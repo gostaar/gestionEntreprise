@@ -12,6 +12,20 @@ router.get('/', async (req, res) => {
     }
   });
 
+router.post('/', async (req, res) => {
+  const { nom, prenom, email, telephone, adresse, ville, code_postal, pays } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO fournisseurs (nom, prenom, email, telephone, adresse, ville, code_postal, pays) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [nom, prenom, email, telephone, adresse, ville, code_postal, pays]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erreur serveur');
+  }
+});
+
 router.get('/:id', async (req, res) => {
   const fournisseurId = req.params.id;
   try {
@@ -27,5 +41,7 @@ router.get('/:id', async (req, res) => {
     res.status(500).send('Erreur serveur');
   }
 });
+
+
 
   module.exports = router;

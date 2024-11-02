@@ -22,9 +22,9 @@ class FactureFournisseur {
       dateFacture: json['date_facture'] != null
         ? DateTime.parse(json['date_facture'])
         : null,
-      montantTotal: json['montant_total'] is String
-        ? double.tryParse(json['montant_total']) 
-        : (json['montant_total'] as num?)?.toDouble(), 
+      montantTotal: json['montanttotal'] is String
+        ? double.tryParse(json['montanttotal']) 
+        : (json['montanttotal'] as num?)?.toDouble(), 
       statut: json['statut'],
       datePaiement: json['date_paiement'] != null
           ? DateTime.parse(json['date_paiement'])
@@ -37,7 +37,7 @@ class FactureFournisseur {
       'facture_id': id,
       'fournisseur_id': fournisseurId,
       'date_facture': dateFacture,
-      'montant_total': montantTotal,
+      'montanttotal': montantTotal,
       'statut': statut,
       'date_paiement': datePaiement
     };
