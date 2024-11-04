@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Widget/facture.dart';
-import 'package:my_first_app/Widget/widgets.dart';
-import 'package:my_first_app/models/client.dart';
-import 'package:my_first_app/models/facture.dart';
+import 'package:my_first_app/Widget/customWidgets.dart';
+import 'package:my_first_app/Widget/factureWidgets.dart';
+import 'package:my_first_app/models/clientModel.dart';
+import 'package:my_first_app/models/factureModel.dart';
 
 Widget clientDropdown(int? selectedClient, String text, List<Client> clients, Function(int?) onChanged) {
   return DropdownButtonFormField<int>(

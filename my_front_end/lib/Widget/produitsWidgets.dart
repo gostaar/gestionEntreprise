@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_first_app/models/ligne_facture.dart';
-import 'package:my_first_app/models/produit.dart';
+import 'package:my_first_app/models/ligneFactureModel.dart';
+import 'package:my_first_app/models/produitModel.dart';
 
 class TableHeader extends StatelessWidget {
   const TableHeader({Key? key}) : super(key: key);

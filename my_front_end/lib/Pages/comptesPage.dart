@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/Forms/Add/CompteForm.dart';
-import 'package:my_first_app/Service/client_service.dart';
-import 'package:my_first_app/Service/compte_service.dart';
-import 'package:my_first_app/Service/facture_fournisseur_service.dart';
-import 'package:my_first_app/Service/facture_service.dart';
-import 'package:my_first_app/Service/fournisseur_service.dart';
-import 'package:my_first_app/Widget/compte.dart';
-import 'package:my_first_app/models/client.dart';
-import 'package:my_first_app/models/compte.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
+import 'package:my_first_app/Service/clientService.dart';
+import 'package:my_first_app/Service/compteService.dart';
+import 'package:my_first_app/Service/factureFournisseurService.dart';
+import 'package:my_first_app/Service/factureService.dart';
+import 'package:my_first_app/Service/fournisseurService.dart';
+import 'package:my_first_app/Widget/compteWidgets.dart';
+import 'package:my_first_app/models/clientModel.dart';
+import 'package:my_first_app/models/compteModel.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
 
 class ComptesPage extends StatefulWidget {
   @override

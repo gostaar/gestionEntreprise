@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/models/factureFournisseur.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
+import 'package:my_first_app/models/factureFournisseurModel.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
 
 class FacturesFournisseurComptePage extends StatelessWidget {
   final Fournisseur fournisseur;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Service/client_service.dart';
-import 'package:my_first_app/Service/fournisseur_service.dart';
-import 'package:my_first_app/Widget/widgets.dart';
-import 'package:my_first_app/models/client.dart';
-import 'package:my_first_app/models/compte.dart';
-import 'package:my_first_app/models/facture.dart';
-import 'package:my_first_app/models/factureFournisseur.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
+import 'package:my_first_app/Service/clientService.dart';
+import 'package:my_first_app/Service/fournisseurService.dart';
+import 'package:my_first_app/Widget/customWidgets.dart';
+import 'package:my_first_app/models/clientModel.dart';
+import 'package:my_first_app/models/compteModel.dart';
+import 'package:my_first_app/models/factureModel.dart';
+import 'package:my_first_app/models/factureFournisseurModel.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
 
 Widget buildComptesList(List<Compte> comptes, String typeCompte, List<Client> clients, List<Fournisseur> fournisseurs) {
   if (comptes.isEmpty) {

@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:my_first_app/constants.dart';
-import 'package:my_first_app/models/facture.dart';
-import 'package:my_first_app/models/ligne_facture.dart';
+import 'package:my_first_app/models/factureModel.dart';
+import 'package:my_first_app/models/ligneFactureModel.dart';
 
 class FactureService {
 

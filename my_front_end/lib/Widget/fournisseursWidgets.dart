@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Widget/widgets.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
+import 'package:my_first_app/Widget/customWidgets.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
 
 Widget FournisseurDropdown(int? selectedFournisseur, String text,
     List<Fournisseur> fournisseurs, Function(int?) onChanged) {

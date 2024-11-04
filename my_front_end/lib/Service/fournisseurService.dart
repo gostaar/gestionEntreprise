@@ -1,7 +1,7 @@
 import 'dart:convert'; 
 import 'package:http/http.dart' as http; 
 import 'package:my_first_app/constants.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
 
 class FournisseurService {
   static Future<Fournisseur> getFournisseursById(int fournisseurId) async {

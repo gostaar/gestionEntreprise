@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_first_app/models/facture.dart';
+import 'package:my_first_app/models/factureModel.dart';
 
 class FactureInfoSection extends StatelessWidget {
   final Facture facture;

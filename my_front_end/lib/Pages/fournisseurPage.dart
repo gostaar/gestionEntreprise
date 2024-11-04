@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/Details/detailsFournisseurs.dart';
-import 'package:my_first_app/Service/facture_fournisseur_service.dart';
-import 'package:my_first_app/Service/fournisseur_service.dart';
-import 'package:my_first_app/Widget/dialogs.dart';
-import 'package:my_first_app/Widget/modales.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
-import 'package:my_first_app/models/factureFournisseur.dart';
+import 'package:my_first_app/Pages/Details/fournisseursPageDetails.dart';
+import 'package:my_first_app/Service/factureFournisseurService.dart';
+import 'package:my_first_app/Service/fournisseurService.dart';
+import 'package:my_first_app/Widget/dialogsWidgets.dart';
+import 'package:my_first_app/Widget/modalesWidgets.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
+import 'package:my_first_app/models/factureFournisseurModel.dart';
 
 class FournisseurPage extends StatefulWidget {
   @override

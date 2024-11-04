@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/models/client.dart';
-import 'package:my_first_app/Service/client_service.dart';
+import 'package:my_first_app/models/clientModel.dart';
+import 'package:my_first_app/Service/clientService.dart';
 
 class EditClientForm extends StatefulWidget {
   final Client client;

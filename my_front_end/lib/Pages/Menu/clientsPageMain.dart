@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/clients_page.dart';
-import 'package:my_first_app/Pages/factures_page.dart';
-import 'package:my_first_app/Pages/produits_page.dart';
+import 'package:my_first_app/Pages/clientsPage.dart';
+import 'package:my_first_app/Pages/facturesPage.dart';
+import 'package:my_first_app/Pages/produitsPage.dart';
 
 class ClientMainPage extends StatefulWidget {
   @override

@@ -2,9 +2,9 @@ import 'dart:convert'; // Pour utiliser jsonEncode
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:my_first_app/Service/produit_service.dart';
+import 'package:my_first_app/Service/produitService.dart';
 import 'package:my_first_app/constants.dart';
-import 'package:my_first_app/models/produit.dart';
+import 'package:my_first_app/models/produitModel.dart';
 
 class AddProduitForm extends StatefulWidget {
   @override

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:my_first_app/constants.dart';
-import 'package:my_first_app/models/factureFournisseur.dart';
+import 'package:my_first_app/models/factureFournisseurModel.dart';
 
 class FactureFournisseurService {
   static Future<List<FactureFournisseur>> fetchFactureFournisseur() async {

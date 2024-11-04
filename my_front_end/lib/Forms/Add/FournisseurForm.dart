@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_first_app/constants.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
 
 class AddFournisseurForm extends StatefulWidget {
   @override

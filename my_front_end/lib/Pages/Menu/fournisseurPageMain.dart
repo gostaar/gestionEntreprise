@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/fournisseur_page.dart';
-import 'package:my_first_app/Pages/factureFournisseur_page.dart';
+import 'package:my_first_app/Pages/fournisseurPage.dart';
+import 'package:my_first_app/Pages/factureFournisseurPage.dart';
 
 class FournisseurMainPage extends StatefulWidget {
   @override

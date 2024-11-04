@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/Details/detailsFactureFournisseur.dart';
-import 'package:my_first_app/Service/fournisseur_service.dart';
-import 'package:my_first_app/Widget/dialogs.dart';
-import 'package:my_first_app/Widget/facturefournisseur.dart';
-import 'package:my_first_app/Widget/fournisseurs.dart';
-import 'package:my_first_app/models/factureFournisseur.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
+import 'package:my_first_app/Pages/Details/factureFournisseurPageDetails.dart';
+import 'package:my_first_app/Service/fournisseurService.dart';
+import 'package:my_first_app/Widget/dialogsWidgets.dart';
+import 'package:my_first_app/Widget/facturefournisseurWidgets.dart';
+import 'package:my_first_app/Widget/fournisseursWidgets.dart';
+import 'package:my_first_app/models/factureFournisseurModel.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
 
 class FournisseurDetailPage extends StatelessWidget {
   final Fournisseur fournisseur; 

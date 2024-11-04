@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:my_first_app/constants.dart';
-import 'package:my_first_app/models/compte.dart'; 
+import 'package:my_first_app/models/compteModel.dart'; 
 
 class CompteService {
   Future<List<Compte>> fetchComptes() async {

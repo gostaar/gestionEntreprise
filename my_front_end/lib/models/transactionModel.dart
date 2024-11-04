@@ -1,5 +1,5 @@
-import 'compte.dart';
-import 'facture.dart';
+import 'compteModel.dart';
+import 'factureModel.dart';
 
 class Transaction {
   final int transactionId;

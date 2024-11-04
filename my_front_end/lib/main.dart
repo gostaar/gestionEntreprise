@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/Menu/clientsMain_page.dart';
-import 'package:my_first_app/Pages/Menu/fournisseurMain_page.dart';
-import 'package:my_first_app/Pages/transactions.dart';
-import 'Pages/comptes_page.dart';
-import 'Pages/parametres_page.dart';
+import 'package:my_first_app/Pages/Menu/clientsPageMain.dart';
+import 'package:my_first_app/Pages/Menu/fournisseurPageMain.dart';
+import 'package:my_first_app/Pages/transactionsPage.dart';
+import 'Pages/comptesPage.dart';
+import 'Pages/parametresPage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {

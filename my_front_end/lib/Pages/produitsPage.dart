@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_first_app/Forms/Add/ProduitForm.dart';
-import 'package:my_first_app/Widget/dialogs.dart';
-import 'package:my_first_app/models/produit.dart';
-import 'package:my_first_app/Service/produit_service.dart';
+import 'package:my_first_app/Widget/dialogsWidgets.dart';
+import 'package:my_first_app/models/produitModel.dart';
+import 'package:my_first_app/Service/produitService.dart';
 
 class ProduitsPage extends StatefulWidget {
   @override

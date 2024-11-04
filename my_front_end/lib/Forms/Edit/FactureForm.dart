@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_first_app/Forms/Add/ClientForm.dart';
 //import 'package:my_first_app/Forms/Add/ProduitForm.dart';
-import 'package:my_first_app/Service/client_service.dart';
-import 'package:my_first_app/Service/facture_service.dart';
-import 'package:my_first_app/Widget/client.dart';
-import 'package:my_first_app/Widget/form.dart';
+import 'package:my_first_app/Service/clientService.dart';
+import 'package:my_first_app/Service/factureService.dart';
+import 'package:my_first_app/Widget/clientWidgets.dart';
+import 'package:my_first_app/Widget/customWidgets.dart';
 //import 'package:my_first_app/Service/produit_service.dart';
-import 'package:my_first_app/models/client.dart';
-import 'package:my_first_app/models/facture.dart';
-import 'package:my_first_app/models/ligne_facture.dart';
+import 'package:my_first_app/models/clientModel.dart';
+import 'package:my_first_app/models/factureModel.dart';
+import 'package:my_first_app/models/ligneFactureModel.dart';
 //import 'package:my_first_app/models/produit.dart';
 
 class EditFactureForm extends StatefulWidget {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/Details/detailsClients.dart';
-import 'package:my_first_app/Service/client_service.dart';
-import 'package:my_first_app/Service/facture_service.dart';
-import 'package:my_first_app/Widget/modales.dart';
-import 'package:my_first_app/models/client.dart';
-import 'package:my_first_app/models/facture.dart';
-import 'package:my_first_app/models/ligne_facture.dart';
-import '../Widget/dialogs.dart';
+import 'package:my_first_app/Pages/Details/clientsPageDetails.dart';
+import 'package:my_first_app/Service/clientService.dart';
+import 'package:my_first_app/Service/factureService.dart';
+import 'package:my_first_app/Widget/modalesWidgets.dart';
+import 'package:my_first_app/models/clientModel.dart';
+import 'package:my_first_app/models/factureModel.dart';
+import 'package:my_first_app/models/ligneFactureModel.dart';
+import '../Widget/dialogsWidgets.dart';
 
 class ClientsPage extends StatefulWidget {
   @override

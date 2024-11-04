@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_first_app/Forms/Add/FactureFournisseurForm.dart';
-import 'package:my_first_app/Pages/Details/detailsFactureFournisseur.dart';
-import 'package:my_first_app/Service/facture_fournisseur_service.dart';
-import 'package:my_first_app/Service/fournisseur_service.dart';
-import 'package:my_first_app/Widget/dialogs.dart';
-import 'package:my_first_app/models/fournisseurs.dart';
-import 'package:my_first_app/models/factureFournisseur.dart';
+import 'package:my_first_app/Pages/Details/factureFournisseurPageDetails.dart';
+import 'package:my_first_app/Service/factureFournisseurService.dart';
+import 'package:my_first_app/Service/fournisseurService.dart';
+import 'package:my_first_app/Widget/dialogsWidgets.dart';
+import 'package:my_first_app/models/fournisseursModel.dart';
+import 'package:my_first_app/models/factureFournisseurModel.dart';
 
 class FactureFournisseurPage extends StatefulWidget {
   @override
