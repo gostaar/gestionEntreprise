@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Forms/Edit/ClientForm.dart';
 import 'package:my_first_app/Pages/Details/detailsFacture.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
+import 'package:my_first_app/Widget/facture.dart';
+import 'package:my_first_app/Widget/modales.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/facture.dart';
 import 'package:my_first_app/models/ligne_facture.dart';
-import 'package:my_first_app/Widget/Functions.dart';
-import 'package:my_first_app/Widget/Rendered.dart';
+import 'package:my_first_app/Widget/widgets.dart';
 
 class ClientDetailPage extends StatefulWidget {
   final Client client; 

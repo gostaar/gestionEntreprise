@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_first_app/Pages/Details/detailsFacture.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
-import 'package:my_first_app/Widget/Functions.dart';
+import 'package:my_first_app/Widget/dialogs.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/facture.dart';
 

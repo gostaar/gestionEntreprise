@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/Forms/Edit/FactureForm.dart';
 import 'package:my_first_app/Service/facture_service.dart';
+import 'package:my_first_app/Widget/client.dart';
+import 'package:my_first_app/Widget/facture.dart';
+import 'package:my_first_app/Widget/produits.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/facture.dart';
 import 'package:my_first_app/models/ligne_facture.dart';
 import 'package:my_first_app/models/produit.dart';
 import 'package:my_first_app/Service/produit_service.dart';
-import 'package:my_first_app/Service/client_service.dart';
-import 'package:my_first_app/Widget/Functions.dart';
 
 class FactureDetailPage extends StatefulWidget {
   Facture facture;

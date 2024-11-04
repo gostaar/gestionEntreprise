@@ -6,7 +6,7 @@ import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
 import 'package:my_first_app/Forms/Add/FactureForm.dart';
 import 'package:my_first_app/Pages/Details/detailsFacture.dart';
-import 'package:my_first_app/Widget/Functions.dart';
+import 'package:my_first_app/Widget/dialogs.dart';
 
 class FacturesPage extends StatefulWidget {
   @override

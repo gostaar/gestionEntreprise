@@ -107,3 +107,14 @@ Widget datePickerFullAdd(TextEditingController controller, BuildContext context,
     },
   );
 }
+
+Widget customElevatedButton({
+  required bool isEnabled,
+  required VoidCallback? onPressed,
+  required String buttonText,
+}) {
+  return ElevatedButton(
+    onPressed: isEnabled ? onPressed : null,
+    child: Text(buttonText),
+  );
+}

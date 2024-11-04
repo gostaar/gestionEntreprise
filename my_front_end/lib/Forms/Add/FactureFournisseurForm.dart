@@ -5,10 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:my_first_app/Forms/Add/FournisseurForm.dart';
 import 'package:my_first_app/Service/fournisseur_service.dart';
 import 'package:my_first_app/Service/produit_service.dart';
+import 'package:my_first_app/Widget/form.dart';
+import 'package:my_first_app/Widget/fournisseurs.dart';
 import 'package:my_first_app/models/fournisseurs.dart';
 import 'package:my_first_app/constants.dart';
 import 'package:intl/intl.dart';
-import 'package:my_first_app/Widget/Rendered.dart';
+import 'package:my_first_app/Widget/widgets.dart';
 
 class AddFactureFournisseurForm extends StatefulWidget {
   @override

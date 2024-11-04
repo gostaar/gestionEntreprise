@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_first_app/Forms/Add/ProduitForm.dart';
-import 'package:my_first_app/Widget/Functions.dart';
+import 'package:my_first_app/Widget/dialogs.dart';
 import 'package:my_first_app/models/produit.dart';
 import 'package:my_first_app/Service/produit_service.dart';
 

@@ -70,3 +70,34 @@ class ProductDetailsRow extends StatelessWidget {
     );
   }
 }
+
+Widget produitDropdown(int? selectedProduit, String text,
+    List<Produit> produits, Function(int?) onChanged) {
+  return DropdownButtonFormField<int>(
+    value: selectedProduit,
+    decoration: InputDecoration(labelText: text),
+    items: produits.isNotEmpty
+        ? produits.map((produit) {
+            return DropdownMenuItem<int>(
+              value: produit.produitId,
+              child: Text(produit.nomProduit),
+            );
+          }).toList()
+        : [],
+    onChanged: produits.isNotEmpty
+        ? onChanged
+        : null, 
+  );
+}
+
+Widget textQuantity(TextEditingController controller, VoidCallback calculateSousTotal, Function(String) updateQuantity) {
+  return TextField(
+    controller: controller,
+    decoration: InputDecoration(labelText: 'Quantité'),
+    keyboardType: TextInputType.number,
+    onChanged: (value) {
+      updateQuantity(value);
+      calculateSousTotal();
+    },
+  );
+}

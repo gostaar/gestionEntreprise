@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:my_first_app/Pages/Details/detailsFournisseurs.dart';
 import 'package:my_first_app/Service/facture_fournisseur_service.dart';
 import 'package:my_first_app/Service/fournisseur_service.dart';
-import 'package:my_first_app/Widget/Functions.dart';
+import 'package:my_first_app/Widget/dialogs.dart';
+import 'package:my_first_app/Widget/modales.dart';
 import 'package:my_first_app/models/fournisseurs.dart';
 import 'package:my_first_app/models/factureFournisseur.dart';
 

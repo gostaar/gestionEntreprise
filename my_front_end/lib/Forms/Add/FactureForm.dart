@@ -5,11 +5,14 @@ import 'package:my_first_app/Forms/Add/ClientForm.dart';
 import 'package:my_first_app/Forms/Add/ProduitForm.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/produit_service.dart';
+import 'package:my_first_app/Widget/client.dart';
+import 'package:my_first_app/Widget/form.dart';
+import 'package:my_first_app/Widget/produits.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/produit.dart';
 import 'package:my_first_app/constants.dart';
 import 'package:intl/intl.dart';
-import 'package:my_first_app/Widget/Rendered.dart';
+import 'package:my_first_app/Widget/widgets.dart';
 
 class AddFactureForm extends StatefulWidget {
   @override

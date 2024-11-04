@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:my_first_app/Pages/Details/detailsClients.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
+import 'package:my_first_app/Widget/modales.dart';
 import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/facture.dart';
 import 'package:my_first_app/models/ligne_facture.dart';
-import '../Widget/Functions.dart';
+import '../Widget/dialogs.dart';
 
 class ClientsPage extends StatefulWidget {
   @override
