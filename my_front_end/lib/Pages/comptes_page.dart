@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Forms/AddCompteForm.dart';
+import 'package:my_first_app/Forms/Add/CompteForm.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/compte_service.dart';
 import 'package:my_first_app/Service/facture_fournisseur_service.dart';

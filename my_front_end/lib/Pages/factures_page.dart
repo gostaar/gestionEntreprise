@@ -4,7 +4,7 @@ import 'package:my_first_app/models/client.dart';
 import 'package:my_first_app/models/facture.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/facture_service.dart';
-import 'package:my_first_app/Forms/AddFactureForm.dart';
+import 'package:my_first_app/Forms/Add/FactureForm.dart';
 import 'package:my_first_app/Pages/Details/detailsFacture.dart';
 import 'package:my_first_app/Widget/Functions.dart';
 
@@ -142,7 +142,7 @@ class _FacturesPageState extends State<FacturesPage> {
         ),
       ),
       body: _filteredFactures.isEmpty
-          ? Center(child: Text('Aucune facture trouvée.'))
+          ? Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: _filteredFactures.length,
               itemBuilder: (context, index) {

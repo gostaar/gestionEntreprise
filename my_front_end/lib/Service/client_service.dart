@@ -25,4 +25,29 @@ class ClientService {
       throw Exception('Erreur lors du chargement des clients');
     }
   }
+
+  static Future<void> updateClient(Client client) async {
+    final response = await http.patch(
+      Uri.parse('$apiUrl/clients/${client.clientId}'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'nom': client.nom,
+        'prenom': client.prenom,
+        'email': client.email,
+        'telephone': client.telephone,
+        'adresse': client.adresse,
+        'ville': client.ville,
+        'codePostal': client.codePostal,
+        'pays': client.pays,
+        'numeroTva': client.numeroTva,
+      }),
+    );
+    //print(response.body);
+    if (response.statusCode != 200) {
+      throw Exception('Erreur lors de la mise à jour du client');
+    }
+  }
 }
+

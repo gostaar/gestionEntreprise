@@ -22,6 +22,18 @@ router.get('/lastId', async(req, res) => {
   }
 })
 
+router.get('/:id', async(req, res) => {
+  const facture_id = req.params.id;
+  
+  try{
+    const result = await pool.query('SELECT * FROM Factures WHERE facture_id = $1', [facture_id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erreur serveur');
+  }
+})
+
 router.post('/', async (req, res) => {
   const { facture_id, client_id, date_facture, montant_total, statut, date_paiement, lignes } = req.body;
 
@@ -69,16 +81,42 @@ router.get('/client/:clientId', async (req, res) => {
   const { clientId } = req.params;
 
   try {
-    // Utilisez une requête SQL pour obtenir les factures par clientId
     const result = await pool.query('SELECT * FROM Factures WHERE client_id = $1', [clientId]);
-    
-
-    
-    // Renvoyez les factures trouvées
     res.json(result.rows);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erreur lors de la récupération des factures' });
+  }
+});
+
+router.patch('/:id', async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body; // Contient seulement les champs à mettre à jour
+
+  const query = `
+    UPDATE factures 
+    SET client_id = $1, date_facture = $2, montant_total = $3, statut = $4, date_paiement = $5 
+    WHERE client_id = $6
+    RETURNING *;
+  `;
+
+  const values = [
+    updates.client_id,
+    updates.date_facture,
+    updates.montant_total,
+    updates.statut,
+    updates.date_paiement,
+    id
+  ];
+
+  try {
+    const result = await pool.query(query, values);
+    
+    // Vérifiez le résultat ici
+    //console.log('Résultat de la mise à jour:', result);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur lors de la mise à jour du client coté backend', error });
   }
 });
 

@@ -58,36 +58,31 @@ class _ClientsPageState extends State<ClientsPage> {
 
 
   void _openDetailsClient(BuildContext context, Client client) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(child: CircularProgressIndicator()),
-    );
-    try {
-      final List<Facture> factures = await FactureService.getFacturesByClientId(client.clientId);
-      Navigator.pop(context);
+  //showDialog(
+  //  context: context,
+  //  barrierDismissible: false,
+  //  builder: (context) => Center(child: CircularProgressIndicator()),
+  //);
+  
+  try {
+    final List<Facture> factures = await FactureService.getFacturesByClientId(client.clientId);
+    final bool? isReload = await Navigator.push(context, MaterialPageRoute(builder: (context) => ClientDetailPage(factures: factures, client: client),)); 
 
-      List<LigneFacture> lignesFacturesData = [];
-      for (var facture in factures) {
-        final lignes = await factureService.getLignesFacture(facture.id);
-        lignesFacturesData.addAll(lignes);
-      }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ClientDetailPage(
-            factures: factures,
-            client: client, 
-            //lignesFacture: lignesFacturesData ?? [], 
-          ),
-        ),
-      );
-    } catch (error) {
-      Navigator.pop(context);
-      _showError(context, 'Erreur lors de la récupération des données: $error');
+    if(isReload != null && isReload){
+      _loadClients(); 
     }
+      
+    
+    List<LigneFacture> lignesFacturesData = [];
+    for (var facture in factures) {
+      final lignes = await factureService.getLignesFacture(facture.id);
+      lignesFacturesData.addAll(lignes);
+    }
+  } catch (error) {
+    Navigator.pop(context); // Ferme le dialogue
+    _showError(context, 'Erreur lors de la récupération des données: $error');
   }
+}
     
   void _showError(BuildContext context, String message) {
     showDialog(

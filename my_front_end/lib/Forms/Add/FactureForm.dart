@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:my_first_app/Forms/AddClientForm.dart';
-import 'package:my_first_app/Forms/AddProduitForm.dart';
+import 'package:my_first_app/Forms/Add/ClientForm.dart';
+import 'package:my_first_app/Forms/Add/ProduitForm.dart';
 import 'package:my_first_app/Service/client_service.dart';
 import 'package:my_first_app/Service/produit_service.dart';
 import 'package:my_first_app/models/client.dart';
@@ -22,12 +22,12 @@ class _AddFactureFormState extends State<AddFactureForm> {
   final TextEditingController _quantiteController = TextEditingController();
   int? _selectedClient;
   int? _selectedProduit;
+  String? _selectedStatut;
   List<Client> _clients = [];
   List<Produit> _produits = [];
   double? _prixUnitaire;
   double? _sousTotal;
   int? _quantity;
-  String? _selectedStatut;
   List<String> textDanger = ['Aucun client disponible. Veuillez ajouter un client.','Aucun produit disponible. Veuillez ajouter un produit.'];
   final ProduitService produitService = ProduitService();
   String formatDate(String date) {
@@ -164,11 +164,11 @@ class _AddFactureFormState extends State<AddFactureForm> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          datePickerFull(_dateFactureController, context, 'Date de Facture', _selectDate),
+          datePickerFullAdd(_dateFactureController, context, 'Date de Facture', _selectDate),
           clientDropdown(_selectedClient, 'Client', _clients, (int? newValue) { setState(() { _selectedClient = newValue; });},),
           actionButton( 'Créer un client', _addClient,),
           textButtonDangerClient(_clients, textDanger[0]),
-          datePickerFull(_datePaiementController, context, 'Date de paiement', _selectDate),
+          datePickerFullAdd(_datePaiementController, context, 'Date de paiement', _selectDate),
           statutDropdown(_selectedStatut, (String? newValue) {setState(() {_selectedStatut = newValue;});}),
           produitDropdown(_selectedProduit,'Produit', _produits,(int? newValue) {
               setState(() {
@@ -181,8 +181,8 @@ class _AddFactureFormState extends State<AddFactureForm> {
           textButtonDangerProduit(_produits, textDanger[1]),
           actionButton('Créer un produit',_addProduit,),
           textQuantity(_quantiteController, _calculateSousTotal, _updateQuantity),
-          Text('Prix Unitaire: ${_prixUnitaire?.toStringAsFixed(2) ?? '0.00'}'),
-          Text('Sous Total: ${_sousTotal?.toStringAsFixed(2) ?? '0.00'}'),
+          Text('Prix Unitaire: ${_prixUnitaire?.toStringAsFixed(2) ?? 'indisponible'}'),
+          Text('Sous Total: ${_sousTotal?.toStringAsFixed(2) ?? 'Indisponible'}'),
           customElevatedButton( isEnabled: _selectedClient != null && _selectedProduit != null && _quantity != null, onPressed: _addFacture, buttonText: 'Ajouter Facture'),
         ],
       ),

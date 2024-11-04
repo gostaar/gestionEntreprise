@@ -55,4 +55,35 @@ class FactureService {
       throw Exception('Erreur lors de la récupération des factures');
     }
   }
+
+  static Future<Facture> getFactureById(int factureId) async {
+    final response = await http.get(Uri.parse('$apiUrl/factures/$factureId'));
+
+    if(response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return Facture.fromJson(data);
+    } else {
+      throw Exception('Erreur lors de la récupération de la facture: ${response.statusCode}');
+    }
+  }
+
+   static Future<void> updateFacture(Facture facture) async {
+    final response = await http.patch(
+      Uri.parse('$apiUrl/factures/${facture.id}'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'client_id': facture.clientId,
+        'date_facture': facture.dateFacture,
+        'montant_total': facture.montantTotal,
+        'statut': facture.statut,
+        'date_paiement': facture.datePaiement,
+      }),
+    );
+    print(response.body);
+    if (response.statusCode != 200) {
+      throw Exception('Erreur lors de la mise à jour de la facture');
+    }
+  }
 }
