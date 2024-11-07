@@ -4,7 +4,7 @@ import 'package:my_first_app/Forms/Add/FactureFournisseurForm.dart';
 import 'package:my_first_app/Pages/Details/factureFournisseurPageDetails.dart';
 import 'package:my_first_app/Service/factureFournisseurService.dart';
 import 'package:my_first_app/Service/fournisseurService.dart';
-import 'package:my_first_app/Widget/dialogsWidgets.dart';
+import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/fournisseursModel.dart';
 import 'package:my_first_app/models/factureFournisseurModel.dart';
 
@@ -49,7 +49,7 @@ class _FactureFournisseurPageState extends State<FactureFournisseurPage> {
       //setState(() {
       //  _isLoading = false; // Fin du chargement en cas d’erreur
       //});
-      _showError(context, 'Erreur lors de la récupération des factures: $error');
+      showError(context, 'Erreur lors de la récupération des factures: $error');
     }
   }
 
@@ -71,47 +71,43 @@ class _FactureFournisseurPageState extends State<FactureFournisseurPage> {
     }
   }
 
-  void _showError(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ErrorDialog(message: message);
-      },
-    );
-  }
-
   void _openAddFactureFournisseurForm(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) => Padding(
         padding: const EdgeInsets.all(16.0),
-        child: AddFactureFournisseurForm(),
+        child: AddFactureFournisseurForm(addFactureFournisseurFunction: FactureFournisseurService.addFactureFournisseur,),
       ),
     ).then((_) => _refreshFactures());
   }
 
-  void _navigateToDetailPage(BuildContext context, FactureFournisseur facture) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FutureBuilder<Fournisseur>(
-          future: FournisseurService.getFournisseursById(facture.fournisseurId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return ErrorDialog(message: 'Erreur lors de la récupération des données : ${snapshot.error}');
-            } else {
-              return FactureFournisseurDetailPage(
-                factures: [facture],
-                fournisseur: snapshot.data!,
-              );
-            }
-          },
-        ),
-      ),
+  void _navigateToDetailPage(BuildContext context, FactureFournisseur facture) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
     );
+
+    try {
+      Fournisseur fournisseur = await FournisseurService.getFournisseursById(facture.fournisseurId);
+
+      Navigator.of(context).pop(); // Close the loading dialog
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FactureFournisseurDetailPage(
+            factures: [facture],
+            fournisseur: fournisseur,
+          ),
+        ),
+      );
+    } catch (error) {
+      Navigator.of(context).pop(); // Close the loading dialog
+
+      showError(context, 'Erreur lors de la récupération des données : $error');
+    }
   }
 
   @override

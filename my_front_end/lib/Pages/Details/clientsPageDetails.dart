@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/Details/facturePageDetails.dart';
+import 'package:my_first_app/Pages/Details/factureDetails.dart';
 import 'package:my_first_app/Service/clientService.dart';
 import 'package:my_first_app/Service/factureService.dart';
-import 'package:my_first_app/Widget/factureWidgets.dart';
-import 'package:my_first_app/Widget/modalesWidgets.dart';
+import 'package:my_first_app/Widget/Facture/temp-InfoSection.dart';
+import 'package:my_first_app/Widget/customWidget/buildDetailRowWidget.dart';
+import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 import 'package:my_first_app/models/ligneFactureModel.dart';
-import 'package:my_first_app/Widget/customWidgets.dart';
 
 class ClientDetailPage extends StatefulWidget {
   final Client client; 
@@ -101,7 +101,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     );
 
     try {
-      final lignesFacture = await _fetchLignesFacture(f.id);
+      final lignesFacture = await _fetchLignesFacture(f.factureId);
       final clientDetails = await ClientService.getClientById(f.clientId);
       Navigator.pop(context);
       _navigateTo(
@@ -132,7 +132,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
       itemBuilder: (context, index) {
         final facture = factures[index];
         return ListTile(
-          title: Text('Facture ${facture.id}'),
+          title: Text('Facture ${facture.factureId}'),
           subtitle: FactureInfoSection(facture: facture),
           onTap: () => _navigateToFacturesPage(context, facture),
         );

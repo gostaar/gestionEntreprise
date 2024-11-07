@@ -17,23 +17,37 @@ class FactureService {
     }
   }
 
-  Future<List<LigneFacture>> getLignesFacture(int factureId) async {
-    try {
-      final response = await _getData('$apiUrl/lignesfactures/$factureId');
-      
-      if (response != null) {
-        final lignes = (response as List)
-            .map((ligne) => LigneFacture.fromJson(ligne as Map<String, dynamic>))
-            .toList();
-        return lignes;
+   static Future<int> getLastFactureId() async {
+    final response = await http.get(Uri.parse('$apiUrl/factures/lastId'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      if (data.isNotEmpty) {
+        return data[0]['facture_id'];
       } else {
-        return [];
+        throw Exception('Aucune facture trouvée.');
       }
-    } catch (e) {
-      print('Erreur lors de la récupération des lignes de facture: $e');
-      return [];
+    } else {
+      throw Exception('Erreur lors de la récupération du dernier facture_id: ${response.body}');
     }
   }
+
+  Future<List<LigneFacture>> getLignesFacture(int factureId) async {
+  try {
+    final response = await _getData('$apiUrl/lignesfactures/$factureId');
+    if (response != null && response is List) {
+      final lignes = response
+          .map((ligne) => LigneFacture.fromJson(ligne as Map<String, dynamic>))
+          .toList();
+      return lignes;
+    } else {
+      return [];
+    }
+  } catch (e) {
+    throw Exception('Erreur lors de la récupération des lignes de facture: $e');
+  }
+}
+
 
   Future<dynamic> _getData(String url) async {
     final response = await http.get(Uri.parse(url));
@@ -69,7 +83,7 @@ class FactureService {
 
    static Future<void> updateFacture(Facture facture) async {
     final response = await http.patch(
-      Uri.parse('$apiUrl/factures/${facture.id}'),
+      Uri.parse('$apiUrl/factures/${facture.factureId}'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -81,9 +95,75 @@ class FactureService {
         'date_paiement': facture.datePaiement,
       }),
     );
-    print(response.body);
     if (response.statusCode != 200) {
       throw Exception('Erreur lors de la mise à jour de la facture');
+    }
+  }
+
+  static Future<int> getLastLigneId() async {
+    final response = await http.get(Uri.parse('$apiUrl/lignesfactures/lastId'));
+    
+    if(response.statusCode == 200){
+      List<dynamic> data = json.decode(response.body);
+      if(data.isNotEmpty){
+        return data[0]['ligne_id'];
+      } else {
+        throw Exception('Aucune ligne de facture trouvée');
+      }
+    } else {
+      throw Exception('Erreur lors de la récupération des lignes factures');
+    }
+  }
+
+  static Future<void> addFacture({
+    required int factureId,
+    required int clientId,
+    required double? montantTotal,
+    required String? statut,
+    required DateTime? dateFacture,
+    required DateTime? datePaiement,
+  }) async {
+    try {
+      await http.post(
+        Uri.parse('$apiUrl/factures'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'facture_id': factureId,
+          'client_id': clientId,
+          'date_facture': dateFacture,
+          'montant_total': montantTotal,
+          'statut': statut,
+          'date_paiement': datePaiement,
+        }),
+      );
+     
+      
+    } catch (e) {
+      throw Exception('Erreur lors de l\'ajout de la facture: $e');
+    }
+  } 
+  
+  static Future<void> addLigneFacture({
+    required int ligneId,
+    required int factureId,
+    required int produitId,
+    required int quantite,
+    required double prixUnitaire,
+  }) async {
+    try{
+      await http.post(
+      Uri.parse('$apiUrl/lignesfactures'),
+      headers:{'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'ligne_id': ligneId,
+        'facture_id': factureId,
+        'produit_id': produitId,
+        'quantite': quantite,
+        'prix_unitaire': prixUnitaire,
+        'sous_Total': quantite*prixUnitaire,
+      }));
+    } catch (e){
+      throw Exception('Erreur lors de l\'ajout de la ligne de facture: $e');
     }
   }
 }

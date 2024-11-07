@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_first_app/models/factureModel.dart';
+import 'package:my_first_app/constants.dart';
+import 'package:my_first_app/models/factureFournisseurModel.dart';
 
-class FactureInfoSection extends StatelessWidget {
-  final Facture facture;
+class FactureFournisseurInfoSection extends StatelessWidget {
+  final FactureFournisseur facture;
 
-  const FactureInfoSection({Key? key, required this.facture}) : super(key: key);
+  const FactureFournisseurInfoSection({Key? key, required this.facture}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +20,8 @@ class FactureInfoSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Montant Total: ${formattedMontant}\nDate: ${formattedDate}'),
-        Divider(thickness: 1, color: Colors.grey[400]),   
+        Divider(thickness: 1, color: customColors['lineGrey']),   
       ],
     );
   }
 }
-

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/Pages/Details/factureFournisseurPageDetails.dart';
 import 'package:my_first_app/Service/fournisseurService.dart';
-import 'package:my_first_app/Widget/dialogsWidgets.dart';
-import 'package:my_first_app/Widget/facturefournisseurWidgets.dart';
-import 'package:my_first_app/Widget/fournisseursWidgets.dart';
+import 'package:my_first_app/Widget/FactureFournisseur/temp-InfoSection.dart';
+import 'package:my_first_app/Widget/Fournisseurs/AddFournisseursWidgets.dart';
+import 'package:my_first_app/Widget/Fournisseurs/fournisseursDetailsWidget.dart';
+import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/factureFournisseurModel.dart';
 import 'package:my_first_app/models/fournisseursModel.dart';
 
@@ -15,15 +16,6 @@ class FournisseurDetailPage extends StatelessWidget {
     required this.fournisseur,
     required this.factures,
   });
-
-  void _showError(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ErrorDialog(message: message);
-      },
-    );
-  }
 
   void _navigateToFacturesPage(BuildContext context, FactureFournisseur f) async {
     showDialog(
@@ -50,7 +42,7 @@ class FournisseurDetailPage extends StatelessWidget {
       );
     } catch (error) {
       Navigator.pop(context); 
-      _showError(context, 'Erreur lors de la récupération des factures fournisseur: $error');
+      showError(context, 'Erreur lors de la récupération des factures fournisseur: $error');
     }
   }
 

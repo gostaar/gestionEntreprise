@@ -23,7 +23,7 @@ router.get('/lastId', async(req, res) => {
 })
 
 router.get('/:id', async(req, res) => {
-  const facture_id = req.params.id;
+  const facture_id = req.params.facutre_id;
   
   try{
     const result = await pool.query('SELECT * FROM Factures WHERE facture_id = $1', [facture_id]);
@@ -35,9 +35,9 @@ router.get('/:id', async(req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const { facture_id, client_id, date_facture, montant_total, statut, date_paiement, lignes } = req.body;
+  const { facture_id, client_id, date_facture, montant_total, statut, date_paiement } = req.body;
 
-  if (!client_id || !date_facture || !montant_total || !statut || !Array.isArray(lignes)) {
+  if (!client_id || !date_facture || !montant_total || !statut ) {
     return res.status(400).send('Données d\'entrée manquantes ou incorrectes');
   }
 
@@ -54,23 +54,8 @@ router.post('/', async (req, res) => {
     );
 
     const facture = result.rows[0];
-
-    const lignesPromises = lignes.map(async (ligne) => {
-      const { ligne_id, produit_id, quantite, prix_unitaire } = ligne;
-
-      if (!produit_id || !quantite || !prix_unitaire ) {
-        throw new Error('Données de ligne manquantes ou incorrectes');
-      }
-
-      return pool.query(
-        'INSERT INTO Lignes_Facture (ligne_id, facture_id, produit_id, quantite, prix_unitaire) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [ligne_id, facture.facture_id, produit_id, quantite, prix_unitaire]
-      );
-    });
-
-    await Promise.all(lignesPromises);
-
     res.json(facture);
+    
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Erreur serveur : ' + err.message);

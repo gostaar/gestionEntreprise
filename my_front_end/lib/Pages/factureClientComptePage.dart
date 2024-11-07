@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Pages/Details/facturePageDetails.dart';
+import 'package:my_first_app/Pages/Details/factureDetails.dart';
 import 'package:my_first_app/Service/clientService.dart';
 import 'package:my_first_app/Service/factureService.dart';
-import 'package:my_first_app/Widget/dialogsWidgets.dart';
+import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 
@@ -54,15 +54,6 @@ class FactureListView extends StatelessWidget {
     required this.title,
   });
 
-  void _showError(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ErrorDialog(message: message);
-      },
-    );
-  }
-
   void _navigateToDetailPage(BuildContext context, Facture facture) async {
     showDialog(
       context: context,
@@ -71,7 +62,7 @@ class FactureListView extends StatelessWidget {
     );
 
     try {
-      final lignesFactureData = await factureService.getLignesFacture(facture.id);
+      final lignesFactureData = await factureService.getLignesFacture(facture.factureId);
       final client = await ClientService.getClientById(facture.clientId);
 
       Navigator.pop(context);
@@ -87,7 +78,7 @@ class FactureListView extends StatelessWidget {
       );
     } catch (error) {
       Navigator.pop(context);
-      _showError(context, 'Erreur lors de la récupération des données: $error');
+      showError(context, 'Erreur lors de la récupération des données: $error');
     }
   }
 
@@ -103,7 +94,7 @@ class FactureListView extends StatelessWidget {
                 elevation: 4,
                 margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: ListTile(
-                  title: Text('Facture N°${facture.id}'),
+                  title: Text('Facture N°${facture.factureId}'),
                   subtitle: Text('Montant: ${facture.montantTotal?.toStringAsFixed(2)} €'),
                   trailing: Text(facture.statut ?? 'Non renseigné', style: TextStyle(fontWeight: FontWeight.bold)),
                   onTap: () => _navigateToDetailPage(context, facture),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/Widget/Client/editClientWidget.dart';
+import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/Service/clientService.dart';
 
@@ -33,9 +35,6 @@ class _EditClientFormState extends State<EditClientForm> {
   }
 
   Future<void> _updateClient() async {
-    //print(_formData);
-    //print(_formData['telephone']!); //ici c'est vide comme dans la base de donnée mais l'utilisateur a entrer une valeur
-    
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final updatedClient = Client(
@@ -55,29 +54,9 @@ class _EditClientFormState extends State<EditClientForm> {
         await ClientService.updateClient(updatedClient);
         Navigator.pop(context, true); // Ferme le formulaire
       } catch (error) {
-        _showError(context, 'Erreur lors de la mise à jour du client: $error');
+        showError(context, 'Erreur lors de la mise à jour du client: $error');
       }
     }
-  }
-
-  void _showError(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Erreur'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
 @override
@@ -87,34 +66,10 @@ class _EditClientFormState extends State<EditClientForm> {
         key: _formKey,
         child: Column(
           children: <Widget>[
-            // Boucle pour générer les champs de formulaire
-            for (String field in _formData.keys)
-              TextFormField(
-                initialValue: _formData[field],
-                decoration: InputDecoration(
-                  labelText: field[0].toUpperCase() + field.substring(1),
-                ),
-                onSaved: (value) {
-                  // Sauvegarde la valeur du champ
-                  _formData[field] = value ?? '';
-                },
-                validator: (value) {
-                  // Validation uniquement pour le champ 'nom'
-                  if (field == 'nom' && (value == null || value.isEmpty)) {
-                    return 'Veuillez entrer un nom';
-                  }
-                  return null; // Pas d'erreur pour les autres champs
-                },
-              ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateClient,
-              child: Text('Enregistrer'),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.blue, // Couleur du bouton
-              ),
-            ),
+            editClientWidget(
+              _formData,
+              _updateClient,
+            )
           ],
         ),
       ),

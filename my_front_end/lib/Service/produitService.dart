@@ -13,16 +13,14 @@ class ProduitService {
         final List<dynamic> data = json.decode(response.body);
         return data.map<Produit>((json) => Produit.fromJson(json)).toList(); 
       } else {
-        print('Erreur lors de la récupération des produits : ${response.statusCode}');
-        return null; 
+        throw Exception('Erreur lors de la récupération des produits : ${response.statusCode}');
       }
     } catch (e) {
-      print('Exception lors de la récupération des produits : $e');
-      return null; 
+      throw Exception('Exception lors de la récupération des produits : $e');
     }
   } 
 
-   Future<List<Produit>> fetchProduits() async {
+   static Future<List<Produit>> fetchProduits() async {
     final response = await http.get(Uri.parse('$apiUrl/produits'));
 
     if (response.statusCode == 200) {
@@ -33,7 +31,7 @@ class ProduitService {
     }
   }
 
-  Future<int> getLastProduitId() async {
+  static Future<int> getLastProduitId() async {
     final response = await http.get(Uri.parse('$apiUrl/produits/l/lastId'));
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -46,5 +44,32 @@ class ProduitService {
       throw Exception('Erreur lors de la récupération du dernier produit_id: ${response.body}');
     }
   
+  }
+
+  static Future<void> addProduit({
+    required int produitId,
+    required String nomProduit,
+    required String description,
+    required double prix,
+    required int quantiteEnStock,
+    required String categorie,
+
+  }) async {
+    try {
+      await http.post(
+        Uri.parse('$apiUrl/produits'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'produit_id': produitId,
+          'nom_produit': nomProduit,
+          'description': description,
+          'prix': prix,
+          'quantite_en_stock': quantiteEnStock,
+          'categorie': categorie,
+        }),
+      );
+    } catch (e) {
+      throw Exception('Erreur lors de l\'ajout de la facture: $e');
+    }
   }
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 import 'package:my_first_app/Service/clientService.dart';
 import 'package:my_first_app/Service/factureService.dart';
 import 'package:my_first_app/Forms/Add/FactureForm.dart';
-import 'package:my_first_app/Pages/Details/facturePageDetails.dart';
-import 'package:my_first_app/Widget/dialogsWidgets.dart';
+import 'package:my_first_app/Pages/Details/factureDetails.dart';
 
 class FacturesPage extends StatefulWidget {
   @override
@@ -44,7 +44,7 @@ class _FacturesPageState extends State<FacturesPage> {
 
       });
     } catch (error) {
-      _showError(context, 'Erreur lors de la récupération des factures: $error');
+      showError(context, 'Erreur lors de la récupération des factures: $error');
     }
   }
 
@@ -55,7 +55,7 @@ class _FacturesPageState extends State<FacturesPage> {
       setState(() {
         _filteredFactures = _factures.where((facture) {
         // Vérifie si le nom du produit contient la recherche ou si le prix contient la recherche
-        return facture.id.toString().contains(query) || 
+        return facture.factureId.toString().contains(query) || 
                (priceQuery != null && facture.montantTotal.toString().contains(query));
       }).toList();
       });
@@ -66,22 +66,16 @@ class _FacturesPageState extends State<FacturesPage> {
     }
   }
 
-  void _showError(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ErrorDialog(message: message);
-      },
-    );
-  }
-
   void _openAddFactureForm(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) => Padding(
         padding: const EdgeInsets.all(16.0),
-        child: AddFactureForm(),
+        child: AddFactureForm(
+          addFactureFunction: FactureService.addFacture,
+          addLigneFactureFunction: FactureService.addLigneFacture,
+        ),
       ),
     ).then((_) => _refreshFactures());
   }
@@ -94,7 +88,7 @@ class _FacturesPageState extends State<FacturesPage> {
     );
 
     try {
-      final lignesFactureData = await factureService.getLignesFacture(facture.id);
+      final lignesFactureData = await factureService.getLignesFacture(facture.factureId);
       final client = await ClientService.getClientById(facture.clientId);
 
       Navigator.pop(context);
@@ -110,7 +104,7 @@ class _FacturesPageState extends State<FacturesPage> {
       );
     } catch (error) {
       Navigator.pop(context);
-      _showError(context, 'Erreur lors de la récupération des données: $error');
+      showError(context, 'Erreur lors de la récupération des données: $error');
     }
   }
 
@@ -151,7 +145,7 @@ class _FacturesPageState extends State<FacturesPage> {
                   ? NumberFormat.simpleCurrency(locale: 'fr_FR').format(facture.montantTotal)
                   : 'Indisponible';
                 return ListTile(
-                  title: Text('Numéro de Facture: ${facture.id}'),
+                  title: Text('Numéro de Facture: ${facture.factureId}'),
                   subtitle: Text('Statut: ${facture.statut ?? 'Non renseigné'}\nMontant: $formattedPrice'),
                   onTap: () => _navigateToDetailPage(context, facture),
                 );

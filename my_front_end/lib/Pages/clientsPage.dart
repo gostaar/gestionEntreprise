@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/Forms/Add/ClientForm.dart';
 import 'package:my_first_app/Pages/Details/clientsPageDetails.dart';
 import 'package:my_first_app/Service/clientService.dart';
 import 'package:my_first_app/Service/factureService.dart';
-import 'package:my_first_app/Widget/modalesWidgets.dart';
+import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 import 'package:my_first_app/models/ligneFactureModel.dart';
-import '../Widget/dialogsWidgets.dart';
 
 class ClientsPage extends StatefulWidget {
   @override
@@ -42,7 +42,7 @@ class _ClientsPageState extends State<ClientsPage> {
         filteredClients = clientsList;  // Initialisation de la liste filtrée
       });
     } catch (error) {
-      print('Erreur : $error');
+      throw Exception('Erreur : $error');
     }
   }
 
@@ -76,32 +76,14 @@ class _ClientsPageState extends State<ClientsPage> {
     
     List<LigneFacture> lignesFacturesData = [];
     for (var facture in factures) {
-      final lignes = await factureService.getLignesFacture(facture.id);
+      final lignes = await factureService.getLignesFacture(facture.factureId);
       lignesFacturesData.addAll(lignes);
     }
   } catch (error) {
     Navigator.pop(context); // Ferme le dialogue
-    _showError(context, 'Erreur lors de la récupération des données: $error');
+    showError(context, 'Erreur lors de la récupération des données: $error');
   }
 }
-    
-  void _showError(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ErrorDialog(message: message);
-      },
-    );
-  }
-
-  void _showInfo(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return InfoDialog(message: message);
-      },
-    );
-  }
 
     @override
   Widget build(BuildContext context) {
@@ -147,15 +129,20 @@ class _ClientsPageState extends State<ClientsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (BuildContext context) {
-              return const AddClientModal();
-            },
-          );
-          if (result == true) {
+          try {
+            await showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: AddClientForm(addClientFunction: ClientService.addClient,),
+                );
+              },
+            );
             _loadClients();
+          } catch (e) {
+            throw Exception('Erreur lors de l\'ajout du client: $e');
           }
         },
         child: Icon(Icons.add),

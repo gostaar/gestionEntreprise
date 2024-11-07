@@ -11,11 +11,6 @@ class FactureFournisseurDetailPage extends StatelessWidget {
     required this.fournisseur,
   });
 
-  String formatDate(DateTime? date) {
-    if (date == null) return 'Non spécifiée';
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
 @override
   Widget build(BuildContext context) {
     // Display the list of invoices (factures) here

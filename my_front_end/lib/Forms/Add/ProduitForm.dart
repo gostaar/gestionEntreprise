@@ -1,68 +1,58 @@
-import 'dart:convert'; // Pour utiliser jsonEncode
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:my_first_app/Service/produitService.dart';
-import 'package:my_first_app/constants.dart';
-import 'package:my_first_app/models/produitModel.dart';
+import 'package:my_first_app/Widget/Produit/addProduitsWidgets.dart';
 
 class AddProduitForm extends StatefulWidget {
+   final Future<void> Function({
+    required int produitId,
+    required String nomProduit,
+    required String description,
+    required double prix,
+    required int quantiteEnStock,
+    required String categorie,
+  }) addProduitFunction;
+
+  const AddProduitForm({Key? key, required this.addProduitFunction}) : super(key: key);
+
+
   @override
   _AddProduitFormState createState() => _AddProduitFormState();
 }
 
 class _AddProduitFormState extends State<AddProduitForm> {
 
-  final produitService = ProduitService();
-  final TextEditingController nom_produitController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController _prixController = TextEditingController();
-  final TextEditingController quantite_en_stockController = TextEditingController();
-  String? categorie;
-  final TextEditingController dateAjoutController = TextEditingController(text: DateTime.now().toLocal().toString().split(' ')[0],);
-  final List<String> _categories = [
-    'Service',
-    'Produit',
-    'Immobilier',
-    'Location'
-  ];
+  //final produitService = ProduitService();
+  final Map <String, TextEditingController> _controllers = {
+    'nom': TextEditingController(),
+    'description': TextEditingController(),
+    'prix': TextEditingController(),
+    'quantiteStock': TextEditingController(),
+  };
+  String? _selectedCategorie;
+  //final TextEditingController _controllers['nom']! = TextEditingController();
+  //final TextEditingController _controllers['description']! = TextEditingController();
+  //final TextEditingController _controllers['prix']! = TextEditingController();
+  //final TextEditingController _controllers['quantiteStock']! = TextEditingController();
+  //
+  //final TextEditingController dateAjoutController = TextEditingController(text: DateTime.now().toLocal().toString().split(' ')[0],);
+
 
   void _addProduit() async {
-    try {
-      if (nom_produitController.text.isEmpty || 
-        descriptionController.text.isEmpty || 
-        _prixController.text.isEmpty || 
-        quantite_en_stockController.text.isEmpty || 
-        categorie == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Tous les champs doivent être remplis')),
-          );
-          return; 
-        }
-
-      double finalPrix = double.tryParse(_prixController.text)?? 0.0;
-      int finalQuantite = int.tryParse(quantite_en_stockController.text)?? 0;
-
-      final newProduit = Produit(
+    try{
+      await widget.addProduitFunction(
         produitId: 0,
-        nomProduit: nom_produitController.text,
-        description: descriptionController.text,
-        prix: finalPrix,
-        quantiteEnStock: finalQuantite,
-        categorie: categorie ?? 'Non spécifiée',
+        nomProduit: _controllers['nom']!.text,
+        description: _controllers['description']!.text,
+        prix: double.tryParse(_controllers['prix']!.text)??0.0,
+        quantiteEnStock: int.tryParse(_controllers['quantiteStock']!.text)??0,
+        categorie: _selectedCategorie!,
       );
-
-      await http.post(
-        Uri.parse('$apiUrl/produits'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(newProduit.toJson()),
-      );
-
       Navigator.pop(context, true);
     } catch(e) {
       print ("Erreur lors de l'ajout du produit, $e");
     }
   }
+
+  void _updateQuantity(String value) { setState(() { _controllers['quantiteStock']?.text = value.isNotEmpty ? int.tryParse(value)?.toString() ?? '' : '';  });}
 
   @override
   Widget build(BuildContext context) {
@@ -72,59 +62,13 @@ class _AddProduitFormState extends State<AddProduitForm> {
         child: Padding(
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextField(
-                  controller: nom_produitController,
-                  decoration: InputDecoration(labelText: 'Nom du produit'),
+            children: [
+              addProduit(
+                _controllers, 
+                _updateQuantity, 
+                _addProduit 
               ),
-              TextField(
-                  controller: descriptionController,
-                  decoration: InputDecoration(labelText: 'Description')
-              ),
-              TextField(
-                  controller: _prixController,
-                  decoration: InputDecoration(labelText: 'Prix'),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), 
-                  ],
-              ),
-              TextField(
-                  controller: quantite_en_stockController,
-                  decoration: InputDecoration(labelText: 'Quantité en stock'),
-                  keyboardType: TextInputType.numberWithOptions(decimal: false),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), 
-                  ],
-              ),
-              TextField(
-                controller: dateAjoutController,
-                decoration: InputDecoration(labelText: 'Date d\'ajout'),
-                readOnly: true, 
-              ),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Catégorie'),
-                value: categorie, // La valeur actuelle
-                items: _categories.map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    categorie = newValue; 
-                  });
-                },
-                validator: (value) => value == null ? 'Veuillez sélectionner une catégorie' : null,
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _addProduit,
-                child: Text('Ajouter'),
-              ),
-            ],
+            ],           
           ),
         ),
       ),

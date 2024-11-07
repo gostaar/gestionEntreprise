@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/Forms/Add/FournisseurForm.dart';
 import 'package:my_first_app/Pages/Details/fournisseursPageDetails.dart';
 import 'package:my_first_app/Service/factureFournisseurService.dart';
 import 'package:my_first_app/Service/fournisseurService.dart';
-import 'package:my_first_app/Widget/dialogsWidgets.dart';
-import 'package:my_first_app/Widget/modalesWidgets.dart';
+import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
+import 'package:my_first_app/constants.dart';
 import 'package:my_first_app/models/fournisseursModel.dart';
 import 'package:my_first_app/models/factureFournisseurModel.dart';
 
@@ -45,7 +46,7 @@ class _FournisseurPageState extends State<FournisseurPage> {
 
       });
     } catch (error) {
-      _showError(context, 'Erreur lors du chargement des fournisseurs: $error');
+      showError(context, 'Erreur lors du chargement des fournisseurs: $error');
     } finally {
       setState(() {
         _isLoading = false;
@@ -69,39 +70,23 @@ class _FournisseurPageState extends State<FournisseurPage> {
       barrierDismissible: false,
       builder: (context) => Center(child: CircularProgressIndicator()),
     );
-
     try {
-      print(fournisseur.fournisseurId);
-
-      final List<FactureFournisseur> facturesFournisseur = 
-          await FactureFournisseurService.getFactureFournisseurByFournisseurId(fournisseur.fournisseurId);
-      
+      final List<FactureFournisseur> facturesFournisseur = await FactureFournisseurService.getFactureFournisseurByFournisseurId(fournisseur.fournisseurId);
       Navigator.pop(context);
-
-      
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FournisseurDetailPage(
-              factures: facturesFournisseur,
-              fournisseur: fournisseur,
-            ),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FournisseurDetailPage(
+            factures: facturesFournisseur,
+            fournisseur: fournisseur,
           ),
-        );
+        ),
+      );
       
     } catch (error) {
       Navigator.pop(context);
-      _showError(context, 'Erreur lors de la récupération des factures: $error');
+      showError(context, 'Erreur lors de la récupération des factures: $error');
     }
-  }
-
-  void _showError(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ErrorDialog(message: message);
-      },
-    );
   }
 
    @override
@@ -147,19 +132,24 @@ class _FournisseurPageState extends State<FournisseurPage> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (BuildContext context) {
-              return const AddFournisseurModal();
-            },
-          );
-          if (result == true) {
+          try {
+            await showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+              return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: AddFournisseurForm(addFournisseurFunction: FournisseurService.addFournisseur,),
+                );
+              },
+            );
             _loadFournisseurs();
-          }
+          } catch (e) {
+            throw Exception('Erreur lord de l\'ajour du fournisseur, $e');
+          };
         },
         child: Icon(Icons.add),
-        backgroundColor: Colors.blue,
+        backgroundColor: customColors['blue'],
       ),
     );
   }

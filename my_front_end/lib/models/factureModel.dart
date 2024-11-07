@@ -1,5 +1,5 @@
 class Facture {
-  final int id;
+  final int factureId;
   final int clientId;
   final DateTime? dateFacture;
   final double? montantTotal;
@@ -7,7 +7,7 @@ class Facture {
   final DateTime? datePaiement;
 
   Facture({
-    required this.id,
+    required this.factureId,
     required this.clientId,
     this.dateFacture,
     this.montantTotal,
@@ -17,7 +17,7 @@ class Facture {
 
   factory Facture.fromJson(Map<String, dynamic> json) {
     return Facture(
-      id: json['facture_id'],
+      factureId: json['facture_id'],
       clientId: json['client_id'],
       dateFacture: json['date_facture'] != null
         ? DateTime.parse(json['date_facture'])
@@ -34,7 +34,7 @@ class Facture {
 
   Map<String, dynamic> toJson() {
     return {
-      'facture_id': id,
+      'facture_id': factureId,
       'client_id': clientId,
       'date_facture': dateFacture,
       'montant_total': montantTotal,

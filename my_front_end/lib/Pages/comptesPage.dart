@@ -5,7 +5,9 @@ import 'package:my_first_app/Service/compteService.dart';
 import 'package:my_first_app/Service/factureFournisseurService.dart';
 import 'package:my_first_app/Service/factureService.dart';
 import 'package:my_first_app/Service/fournisseurService.dart';
-import 'package:my_first_app/Widget/compteWidgets.dart';
+import 'package:my_first_app/Widget/Compte/buildCompteListWidget.dart';
+import 'package:my_first_app/Widget/Compte/createAccountFactureWidget.dart';
+import 'package:my_first_app/Widget/Compte/createAccountFournisseurWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/compteModel.dart';
 import 'package:my_first_app/models/fournisseursModel.dart';
@@ -50,7 +52,7 @@ class _ComptesPageState extends State<ComptesPage> {
     setState(() {
       isLoading = false;
     });
-    print('Erreur lors du chargement des comptes : $e'); 
+    throw Exception('Erreur lors du chargement des comptes : $e'); 
   }
 }
 
@@ -86,7 +88,7 @@ class _ComptesPageState extends State<ComptesPage> {
               builder: (BuildContext context) {
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: AddCompteForm(),
+                  child: AddCompteForm(addCompteFunction: CompteService.addCompte,),
                 );
               },
             );

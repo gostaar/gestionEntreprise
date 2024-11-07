@@ -3,8 +3,8 @@ class LigneFacture {
   final int factureId;
   final int produitId;
   final int quantite;
-  final String prixUnitaire;
-  final String sousTotal;
+  final double prixUnitaire;
+  final double sousTotal;
 
   LigneFacture({
     required this.ligneId,
@@ -17,12 +17,13 @@ class LigneFacture {
 
   factory LigneFacture.fromJson(Map<String, dynamic> json) {
     return LigneFacture(
-        ligneId: json['ligne_id'],
-        factureId: json['facture_id'],
-        produitId: json['produit_id'],
-        quantite: json['quantite'],
-        prixUnitaire: json['prix_unitaire'],
-        sousTotal: json['sous_total']);
+      ligneId: json['ligne_id'],
+      factureId: json['facture_id'],
+      produitId: json['produit_id'],
+      quantite: json['quantite'],
+      prixUnitaire: double.tryParse(json['prix_unitaire'].toString()) ?? 0.0,
+      sousTotal: double.tryParse(json['sous_total'].toString()) ?? 0.0,
+    );
   }
 
   Map<String, dynamic> toJson() {

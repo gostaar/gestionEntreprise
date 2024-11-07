@@ -20,8 +20,8 @@ class Produit {
     try {
       prixValue = double.parse(json['prix'].toString());
     } catch (e) {
-      print('Erreur lors de la conversion du prix: $e');
       prixValue = 0.0; // Valeur par défaut en cas d'erreur
+      throw Exception('Erreur lors de la conversion du prix: $e');
     }
 
     return Produit(
