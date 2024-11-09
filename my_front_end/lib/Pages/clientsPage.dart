@@ -3,7 +3,6 @@ import 'package:my_first_app/Forms/Add/ClientForm.dart';
 import 'package:my_first_app/Pages/Details/clientsPageDetails.dart';
 import 'package:my_first_app/Service/clientService.dart';
 import 'package:my_first_app/Service/factureService.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 import 'package:my_first_app/models/ligneFactureModel.dart';
@@ -37,12 +36,12 @@ class _ClientsPageState extends State<ClientsPage> {
   void _loadClients() async {
     try {
       final clientsList = await ClientService.fetchClients();
-      setState(() {
+      if(mounted){setState(() {
         clients = clientsList;
         filteredClients = clientsList;  // Initialisation de la liste filtrée
-      });
-    } catch (error) {
-      throw Exception('Erreur : $error');
+      });}
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors du chargement des clients: $e')),);
     }
   }
 
@@ -59,13 +58,7 @@ class _ClientsPageState extends State<ClientsPage> {
 
 
   void _openDetailsClient(BuildContext context, Client client) async {
-  //showDialog(
-  //  context: context,
-  //  barrierDismissible: false,
-  //  builder: (context) => Center(child: CircularProgressIndicator()),
-  //);
-  
-  try {
+   try {
     final List<Facture> factures = await FactureService.getFacturesByClientId(client.clientId);
     final bool? isReload = await Navigator.push(context, MaterialPageRoute(builder: (context) => ClientDetailPage(factures: factures, client: client),)); 
 
@@ -79,9 +72,9 @@ class _ClientsPageState extends State<ClientsPage> {
       final lignes = await factureService.getLignesFacture(facture.factureId);
       lignesFacturesData.addAll(lignes);
     }
-  } catch (error) {
-    Navigator.pop(context); // Ferme le dialogue
-    showError(context, 'Erreur lors de la récupération des données: $error');
+  } catch (e) {
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des données: $e')),);
   }
 }
 
@@ -136,13 +129,13 @@ class _ClientsPageState extends State<ClientsPage> {
               builder: (BuildContext context) {
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: AddClientForm(addClientFunction: ClientService.addClient,),
+                  child: AddClientForm(createClientFunction: ClientService.createClient,),
                 );
               },
             );
             _loadClients();
           } catch (e) {
-            throw Exception('Erreur lors de l\'ajout du client: $e');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout du client: $e')),);
           }
         },
         child: Icon(Icons.add),

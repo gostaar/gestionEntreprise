@@ -4,7 +4,6 @@ import 'package:my_first_app/Pages/factureClientComptePage.dart';
 import 'package:my_first_app/Pages/factureFournisseurComptePage.dart';
 import 'package:my_first_app/Service/factureFournisseurService.dart';
 import 'package:my_first_app/Service/factureService.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/compteModel.dart';
 import 'package:my_first_app/models/factureFournisseurModel.dart';
@@ -26,13 +25,11 @@ void navigateToFacturePage(BuildContext context, Compte compte, List<Client> cli
             builder: (context) => FacturesClientComptePage(client: client, factures: facturesClient),
           ),
         );
-      } catch (error) {
-        showError(context, "Erreur lors de la récupération des factures du client");
-        throw Exception("Erreur lors de la récupération des factures du client : $error");
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des factures du client: $e')),);
       }
     } else {
-      showError(context, "Client non trouvé");
-      throw Exception("Client non trouvé pour le compte : ${compte.nomCompte}");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('client non trouvé pour le compte: ${compte.nomCompte}')),);
     }
   } else if (compte.typeCompte == 'Fournisseur') {
     final matchingFournisseurs = fournisseurs.where((f) => f.fournisseurId == compte.compteId);
@@ -48,15 +45,13 @@ void navigateToFacturePage(BuildContext context, Compte compte, List<Client> cli
             builder: (context) => FacturesFournisseurComptePage(fournisseur: fournisseur, facturesFournisseur: facturesFournisseur),
           ),
         );
-      } catch (error) {
-        showError(context, "Erreur lors de la récupération des factures du fournisseur");
-        throw Exception("Erreur lors de la récupération des factures du fournisseur : $error");
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors du chargement des fournisseurs: $e')),);
       }
     } else {
-      showError(context, "Fournisseur non trouvé");
-      throw Exception("Fournisseur non trouvé pour le compte : ${compte.nomCompte}");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fournisseur non trouvé pour le compte : ${compte.nomCompte}')),);
     }
   } else {
-    throw Exception("Type de compte non reconnu : ${compte.typeCompte}");
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Type de compte non reconnu : ${compte.typeCompte}')),);
   }
 }

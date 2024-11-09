@@ -46,7 +46,7 @@ class ProduitService {
   
   }
 
-  static Future<void> addProduit({
+  static Future<void> createProduit({
     required int produitId,
     required String nomProduit,
     required String description,

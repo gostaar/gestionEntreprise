@@ -1,7 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-Future<void> selectDate(BuildContext context, TextEditingController controller) async {
+Future<void> selectDate(
+  BuildContext context, 
+  TextEditingController controller, 
+  Function(DateTime?)? data 
+) async {
   final DateTime? picked = await showDatePicker(
     context: context,
     locale: const Locale("fr", "FR"),
@@ -11,6 +16,9 @@ Future<void> selectDate(BuildContext context, TextEditingController controller) 
   );
 
   if (picked != null) {
-    controller.text = DateFormat('dd-MM-yyyy').format(picked);
+    Future.delayed(Duration.zero, () {
+      controller.text = DateFormat('dd-MM-yyyy').format(picked);
+      data?.call(picked);
+    });
   }
 }

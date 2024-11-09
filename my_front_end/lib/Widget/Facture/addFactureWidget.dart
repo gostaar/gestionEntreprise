@@ -1,67 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_first_app/Widget/customWidget/selectDateWidget.dart';
 import 'package:my_first_app/constants.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/produitModel.dart';
 
-Widget addFactureWidget(
-
+Widget createFactureWidget(
   BuildContext context,
   Map <String, TextEditingController> controllers,
-  //Future <void> Function(BuildContext, TextEditingController) selectDate,
-  Function() addClient,
-  Function() addProduit,
-  Function() addFacture,
+  Map <String, int?> selected,
+  DateTime? datePaiement,
+  Function() createClient,
+  Function() createProduit,
+  Function() createFacture,
   Function() calculateSousTotal, 
-  Function(String) updateQuantity,
+  Function(DateTime?) onChangeDatePaiement,
+  Function(int?) updateQuantity,
   Function(int?) onChangedClient,
   Function(String?) onChangedStatut,
   Function(int?) onChangedProduit,
   List<Client> client,
   List<Produit> produit,
-  int? selectedClient,
-  String? selectedStatut,
-  int? selectedProduit,
-  double? prixUnitaire,
-  double? sousTotal,
-  int? quantity,
   bool isEnabled,
 ){
   List<String> statuts = ['Non Payée', 'Payée', 'En Cours'];
-  final _formKey = GlobalKey<FormState>();
+  TextEditingController dateController = TextEditingController();
+  dateController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
   return Form(
-    key: _formKey,
     child: Column(
       children: <Widget>[
-        TextFormField(
-          controller: controllers['dateFacture']!,
-          decoration: InputDecoration(
-            labelText: 'Date de Facture',
-            prefixIcon: Icon(Icons.calendar_today),
-            filled: true,
-            fillColor: customColors['borderGrey'],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: customColors['grey']!),
+        //TextFormField(
+        //  controller: dateController,
+        //  decoration: InputDecoration(
+        //    labelText: 'Date de Facture',
+        //    prefixIcon: Icon(Icons.calendar_today),
+        //    filled: true,
+        //    fillColor: customColors['borderGrey'],
+        //    border: OutlineInputBorder(
+        //      borderRadius: BorderRadius.circular(8.0),
+        //      borderSide: BorderSide(color: customColors['grey']!),
+        //    ),
+        //    focusedBorder: OutlineInputBorder(
+        //      borderRadius: BorderRadius.circular(8.0),
+        //      borderSide: BorderSide(color: customColors['blue']!),
+        //    ),
+        //    enabledBorder: OutlineInputBorder(
+         //     borderRadius: BorderRadius.circular(8.0),
+        //      borderSide: BorderSide(color: customColors['grey']!),
+        //    ),
+        //  ),
+        //  enabled: false,
+        //  readOnly: true,
+        //  onTap: () {
+        //    FocusScope.of(context).requestFocus(FocusNode());
+        //    selectDate(context, controllers['dateFacture']!, (pickedDate) {});
+        //  },
+        //  validator: (value) => value == null || value.isEmpty ? 'La date de facture est requise' : null,
+        //),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start, // Aligne à gauche
+          children: [
+            Text(
+              'Date de facture: ${dateController.text}',
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.left, // Alignement à gauche
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: customColors['blue']!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: customColors['grey']!),
-            ),
-          ),
-          readOnly: true,
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-            selectDate(context, controllers['dateFacture']!);
-          },
-          validator: (value) => value == null || value.isEmpty ? 'La date de facture est requise' : null,
+          ],
         ),
         DropdownButtonFormField<int>(
-          value: selectedClient, // Utilise selectedClient comme valeur par défaut
+          value: selected['client'], 
           decoration: InputDecoration(labelText: 'Client'),
           items: client.isNotEmpty
               ? client.map((client) {
@@ -71,19 +78,14 @@ Widget addFactureWidget(
                   );
                 }).toList()
               : [],
-          onChanged: client.isNotEmpty
-              ? (newValue) {
-                  onChangedClient(newValue); // Appelle la fonction onChanged passée en paramètre
-                  throw Exception("Client sélectionné : $newValue"); // Affiche le nouveau client sélectionné
-                }
-              : null,
+           onChanged: client.isNotEmpty ? onChangedClient : null,
           validator: (value) => value == null ? 'Le client est requis' : null,
         ),
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: () {
-              addClient();
+              createClient();
             },
             child: Text(
               "Créer un client",
@@ -100,7 +102,7 @@ Widget addFactureWidget(
             )
           : SizedBox.shrink(),
         TextFormField(
-          controller: controllers['datePaiement']!,
+          controller: controllers['datePaiement'],
           decoration: InputDecoration(
             labelText: 'Date de paiement',
             prefixIcon: Icon(Icons.calendar_today),
@@ -122,12 +124,12 @@ Widget addFactureWidget(
           readOnly: true,
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
-            selectDate(context, controllers['datePaiement']!);
+            selectDate(context, controllers['datePaiement']!, onChangeDatePaiement);
           },
           validator: (value) => value == null || value.isEmpty ? 'La date de paiement est requise' : null ,
         ),
         DropdownButtonFormField<String>(
-          value: selectedStatut,
+          value: null,
           decoration: InputDecoration(labelText: 'Statut'),
           items: statuts.map((String statut) {
             return DropdownMenuItem<String>(
@@ -136,13 +138,10 @@ Widget addFactureWidget(
             );
           }).toList(),
           onChanged: onChangedStatut,
-          validator: (value) {
-            if(value == null){return 'le statut est requis';}
-            return null;  
-          },
-        ),
+          validator: (value) => value == null ? 'le statut est requis' : null,
+        ),        
         DropdownButtonFormField<int>(
-          value: selectedProduit,
+          value: selected['Produit'],
           decoration: InputDecoration(labelText: 'Produit'),
           items: produit.isNotEmpty
               ? produit.map((produit) {
@@ -152,9 +151,7 @@ Widget addFactureWidget(
                   );
                 }).toList()
               : [],
-          onChanged: produit.isNotEmpty
-              ? onChangedProduit
-              : null, 
+          onChanged: produit.isNotEmpty ? onChangedProduit : null, 
           validator: (value) => value == null ? 'Le produit est requis' : null,
         ),
         produit.isEmpty
@@ -167,7 +164,7 @@ Widget addFactureWidget(
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: () {
-              addProduit();
+              createProduit();
             },
             child: Text(
               'Créer un produit',
@@ -182,15 +179,26 @@ Widget addFactureWidget(
           decoration: InputDecoration(labelText: 'Quantité'),
           keyboardType: TextInputType.number,
           onChanged: (value) {
-            updateQuantity(value);
+            updateQuantity(int.parse(value));
             calculateSousTotal();
           },
           validator: (value)  => value == null || value.isEmpty ? 'La quantité est requise' : null,
         ),
-        Text('Prix Unitaire: ${prixUnitaire?.toStringAsFixed(2) ?? 'indisponible'}'),
-        Text('Sous Total: ${sousTotal?.toStringAsFixed(2) ?? 'Indisponible'}'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start, // Aligne à gauche
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 8.0, bottom: 8.0), // Espaces en haut et en bas
+              child: Text(
+                'Prix Unitaire: ${controllers['prixUnitaire']!.text ?? 'indisponible'} \nSous Total: ${controllers['sous_total']!.text ?? 'Indisponible'}',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.left, // Alignement à gauche
+              )
+            ),
+          ],
+        ),
         ElevatedButton(
-          onPressed: isEnabled ? addFacture : null,
+          onPressed: isEnabled ? createFacture : null,
           child: Text('Ajouter Facture'),
         ),
       ]

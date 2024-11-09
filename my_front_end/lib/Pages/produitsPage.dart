@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_first_app/Forms/Add/ProduitForm.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/produitModel.dart';
 import 'package:my_first_app/Service/produitService.dart';
 
@@ -31,10 +30,10 @@ class _ProduitsPageState extends State<ProduitsPage> {
   Future<void> _fetchProduits() async {
     try {
       final fetchedProduits = await ProduitService.fetchProduits();
-      setState(() {
+      if(mounted){setState(() {
         produits = fetchedProduits;
         _filteredProduits = produits; // Initialise la liste filtrée avec tous les produits
-      });
+      });}
     } catch (e) {
       throw Exception('Erreur lors de la récupération des produits : $e');
     }
@@ -61,12 +60,12 @@ void _filterProduits() {
   Future<void> _refreshProduits() async {
     try {
       final _produits = await ProduitService.fetchProduits();
-      setState(() {
+      if(mounted){setState(() {
         produits = _produits;
         _filteredProduits = produits; // Réinitialise la liste filtrée
-      });
-    } catch (error) {
-      showError(context, 'Erreur lors de la récupération des produits: $error');
+      });}
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des produits: $e')),);
     }
   }
 
@@ -76,7 +75,7 @@ void _filterProduits() {
       isScrollControlled: true,
       builder: (BuildContext context) => Padding(
         padding: const EdgeInsets.all(16.0),
-        child: AddProduitForm(addProduitFunction: ProduitService.addProduit,),
+        child: AddProduitForm(createProduitFunction: ProduitService.createProduit,),
       ),
     ).then((_) => _refreshProduits());
   }

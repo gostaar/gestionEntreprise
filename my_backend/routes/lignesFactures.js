@@ -34,12 +34,11 @@ router.get('/:id', async (req, res) => {
   }); 
   
 router.post('/', async (req, res) => {
-  const { ligne_id, factureId, produitId, quantite, prixUnitaire, sous_total } = req.body;
-
+  const { facture_id, produit_id, quantite, prix_unitaire } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO lignesFacture (facture_id, produit_id, quantite, prix_unitaire, sous_Total) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [factureId, produitId, quantite, prixUnitaire, sous_total]
+      'INSERT INTO Lignes_Facture (facture_id, produit_id, quantite, prix_unitaire) VALUES ($1, $2, $3, $4) RETURNING *',
+      [facture_id, produit_id, quantite, prix_unitaire]
     );
 
     const facture = result.rows[0];

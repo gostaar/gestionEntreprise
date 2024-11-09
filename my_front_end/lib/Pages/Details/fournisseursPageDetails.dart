@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_first_app/Pages/Details/factureFournisseurPageDetails.dart';
 import 'package:my_first_app/Service/fournisseurService.dart';
 import 'package:my_first_app/Widget/FactureFournisseur/temp-InfoSection.dart';
-import 'package:my_first_app/Widget/Fournisseurs/AddFournisseursWidgets.dart';
 import 'package:my_first_app/Widget/Fournisseurs/fournisseursDetailsWidget.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/factureFournisseurModel.dart';
 import 'package:my_first_app/models/fournisseursModel.dart';
 
@@ -40,9 +38,9 @@ class FournisseurDetailPage extends StatelessWidget {
           ),
         ),
       );
-    } catch (error) {
+    } catch (e) {
       Navigator.pop(context); 
-      showError(context, 'Erreur lors de la récupération des factures fournisseur: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des factures fournisseur: $e')),);
     }
   }
 

@@ -32,24 +32,23 @@ class Client {
         telephone: json['telephone'] as String?,
         adresse: json['adresse'] as String?,
         ville: json['ville'] as String?,
-        codePostal: json['codePostal'] as String?,
+        codePostal: json['code_postal'] as String?,
         pays: json['pays'] as String?,
-        numeroTva: json['numeroTva'] as String?);
+        numeroTva: json['numero_tva'] as String?);
   }
 
-  // Méthode toJson pour convertir l'objet Client en Map
   Map<String, dynamic> toJson() {
     return {
-      'clientId': clientId,
+      'client_id': clientId,
       'nom': nom,
       'prenom': prenom,
       'email': email,
       'telephone': telephone,
       'adresse': adresse,
       'ville': ville,
-      'codePostal': codePostal,
+      'code_postal': codePostal,
       'pays': pays,
-      'numeroTva': numeroTva,
+      'numero_tva': numeroTva,
     };
   }
 
@@ -78,4 +77,5 @@ class Client {
       telephone: telephone ?? this.telephone,
     );
   }
+
 }

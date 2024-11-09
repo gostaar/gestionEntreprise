@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:my_first_app/Pages/Details/factureDetails.dart';
 import 'package:my_first_app/Service/clientService.dart';
 import 'package:my_first_app/Service/factureService.dart';
-import 'package:my_first_app/Widget/Facture/temp-InfoSection.dart';
-import 'package:my_first_app/Widget/customWidget/buildDetailRowWidget.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
+import 'package:my_first_app/Widget/Client/BuildFactureTabWidget.dart';
+import 'package:my_first_app/Widget/Client/updateClientWidget.dart';
+import 'package:my_first_app/constants.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 import 'package:my_first_app/models/ligneFactureModel.dart';
@@ -22,18 +22,53 @@ class ClientDetailPage extends StatefulWidget {
   _ClientDetailPageState createState() => _ClientDetailPageState();
 }
 
-class _ClientDetailPageState extends State<ClientDetailPage> {
-  late Client client;
-  late List<Facture> factures;
-  bool isEditing = false;
+class _ClientDetailPageState extends State<ClientDetailPage> with SingleTickerProviderStateMixin {
+  Map<String, dynamic> _formData = {};
   final Map<String, TextEditingController> controllers = {};
   
+  String _getFieldValue(String field) { return _formData[clientFormData].toJson()[field] ?? '';}
+  
+  bool isEditing = false;
+  late TabController _tabController;
+  int _previousTabIndex = -1;
+  bool isClientLoaded = false;  
+
   @override
   void initState() {
     super.initState();
-    client = widget.client;
-    factures = widget.factures;
-    _initializeControllers();
+    _formData = {
+      clientFormData: widget.client,
+      factureFormData: widget.factures,
+    };
+
+    // Initialiser les contrôleurs de texte
+    for (var field in clientFields) {
+      controllers[field] = TextEditingController(text: _getFieldValue(field));
+    }
+
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.index != _previousTabIndex) {
+        setState(() {
+          _previousTabIndex = _tabController.index;
+        });
+      }
+    });
+
+    if (widget.client != null) {
+      setState(() {
+        isClientLoaded = true;
+      });
+    } else {
+      _loadClientData();
+    }
+  }
+
+  @override
+  void dispose() {
+    controllers.values.forEach((controller) => controller.dispose()); 
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _toggleEditMode() {
@@ -42,55 +77,49 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
       isEditing = !isEditing;
     });
   }
-
-  void _initializeControllers() {
-    const fields = [
-      'nom', 'prenom', 'email', 'telephone', 
-      'adresse', 'ville', 'codePostal', 'pays', 'numeroTva'
-    ];
-    for (var field in fields) {
-      controllers[field] = TextEditingController(text: _getFieldValue(field));
-    }
+  
+  void _navigateTo(BuildContext context, Widget page) {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => page));
   }
 
-  String _getFieldValue(String field) {return client.toJson()[field] ?? ''; }
+  Future<List<LigneFacture>> _fetchLignesFacture(int factureId) async {
+    return await FactureService().getLignesFacture(factureId);
+  }
 
-  @override
-  void dispose() {
-    controllers.values.forEach((controller) => controller.dispose());
-    super.dispose();
+  Future<void> _loadClientData() async {
+    try {
+      final client = await ClientService.getClientById(widget.client.clientId);
+      setState(() {
+        _formData[clientFormData] = client;
+        isClientLoaded = true;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors du chargement des données client: $e')));
+    }
   }
 
   void _updateClient() async {
-    final updatedClientData = controllers.map((key, controller) => MapEntry(key, controller.text)).cast<String, String>();
-    final updatedClient = client.copyWith(
-      nom: updatedClientData['nom'] ?? client.nom,
-      prenom: updatedClientData['prenom'] ?? client.prenom,
-      email: updatedClientData['email'] ?? client.email,
-      telephone: updatedClientData['telephone'] ?? client.telephone,
-      adresse: updatedClientData['adresse'] ?? client.adresse,
-      ville: updatedClientData['ville'] ?? client.ville,
-      codePostal: updatedClientData['codePostal'] ?? client.codePostal,
-      pays: updatedClientData['pays'] ?? client.pays,
-      numeroTva: updatedClientData['numeroTva'] ?? client.numeroTva,
-    );
-
+    final updatedClientData = controllers.map((key, controller) {return  MapEntry(key, controller.text);});
+   
+    final updatedClient = _formData[clientFormData].copyWith(
+      nom: updatedClientData[nomField] ?? _formData[clientFormData].nom,
+      prenom: updatedClientData[prenomField] ?? _formData[clientFormData].prenom,
+      email: updatedClientData[emailField] ?? _formData[clientFormData].email,
+      telephone: updatedClientData[telephoneField] ?? _formData[clientFormData].telephone,
+      adresse: updatedClientData[adresseField] ?? _formData[clientFormData].adresse,
+      ville: updatedClientData[villeField] ?? _formData[clientFormData].ville,
+      codePostal: updatedClientData[codePostalField] ?? _formData[clientFormData].codePostal,
+      pays: updatedClientData[paysField] ?? _formData[clientFormData].pays,
+      numeroTva: updatedClientData[tvaField] ?? _formData[clientFormData].numeroTva,
+    ); 
     try {
       await ClientService.updateClient(updatedClient);
       final reloadedClient = await ClientService.getClientById(updatedClient.clientId);
-      setState(() {
-        client = reloadedClient;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Client mis à jour avec succès')),
-      );
-    } catch (error) {
-      showError(context, 'Erreur lors de la mise à jour du client: $error');
+      if(mounted){setState(() {_formData[clientFormData] = reloadedClient;});}
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Client mis à jour avec succès')),);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la mise à jour du client: $e')),);
     }
-  }
-
-  void _navigateTo(BuildContext context, Widget page) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
   }
 
   void _navigateToFacturesPage(BuildContext context, Facture f) async {
@@ -112,87 +141,60 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
           client: clientDetails,
         ),
       );
-    } catch (error) {
+    } catch (e) {
       Navigator.pop(context);
-      showError(context, 'Erreur lors de la récupération des factures: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des factures: $e')),);
     }
-  }
-
-  Future<List<LigneFacture>> _fetchLignesFacture(int factureId) async {
-    return await FactureService().getLignesFacture(factureId);
-  }
-
-  Widget buildFacturesTab(BuildContext context, List<Facture> factures, Function(BuildContext, Facture) onNavigate) {
-    if (factures.isEmpty) {
-      return Center(child: Text('Aucune facture pour ce client'));
-    }
-
-    return ListView.builder(
-      itemCount: factures.length,
-      itemBuilder: (context, index) {
-        final facture = factures[index];
-        return ListTile(
-          title: Text('Facture ${facture.factureId}'),
-          subtitle: FactureInfoSection(facture: facture),
-          onTap: () => _navigateToFacturesPage(context, facture),
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Fiche de ${client.nom}'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pop(true),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(isEditing ? Icons.save : Icons.edit),
-              color: isEditing ? Colors.red : Colors.black,
-              onPressed: _toggleEditMode,
-            ),
-          ],
-          bottom: TabBar(
-            tabs: [
-              Tab(text: 'Détails'),
-              Tab(text: 'Factures'),
-            ],
-          ),
+     if (!isClientLoaded) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Fiche de ${_formData[clientFormData].nom}'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(true),
         ),
-        body: FutureBuilder<Client>(
-          future: ClientService.getClientById(client.clientId),
-          builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Erreur: ${snapshot.error}'));
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('Aucun client trouvé.'));
-            } else {
-              //final updatedClient = snapshot.data!;
-              return TabBarView(
-                children: [
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: controllers.entries
-                          .map((entry) => buildDetailRowRendered(entry.key, entry.value, isEditing))
-                          .toList(),
-                    ),
-                  ),
-                  buildFacturesTab(context, factures, _navigateToFacturesPage),
-                ],
-              );
-            }
-          },
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: tabDetails),
+            Tab(text: tabFacture),
+          ],
         ),
       ),
+      body: Column(
+        children: [
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                updateDetailWidget(
+                  controllers,
+                  isEditing,
+                ),
+                buildFacturesTab(
+                  context,
+                  _formData[factureFormData],
+                  _navigateToFacturesPage,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: _tabController.index == 0
+        ? FloatingActionButton(
+            onPressed: _toggleEditMode,
+            child: Icon(isEditing ? Icons.save : Icons.edit),
+            backgroundColor: Colors.blue,
+          )
+        : null,
     );
   }
 }

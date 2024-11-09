@@ -12,10 +12,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/lastId', async (req, res) => {
+  try{
+    const result = await pool.query('SELECT client_Id FROM Clients ORDER BY client_Id DESC LIMIT 1')
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erreur serveur');
+  }
+})
+
 router.get('/:id', async (req, res) => {
-  const clientId = req.params.id;
+  const client_Id = req.params.id;
   try {
-    const result = await pool.query('SELECT * FROM Clients WHERE client_id = $1', [clientId]);
+    const result = await pool.query('SELECT * FROM Clients WHERE client_id = $1', [client_Id]);
     
     if (result.rows.length === 0) {
       return res.status(404).send('Client non trouvé');
@@ -28,22 +38,12 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.get('/lastId', async (req, res) => {
-  try{
-    const result = await pool.query('SELECT clientId FROM Clients ORDER BY clientId DESC LIMIT 1')
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Erreur serveur');
-  }
-})
-
 router.post('/', async (req, res) => {
-  const { nom, prenom, email, telephone, adresse, ville, code_postal, pays } = req.body;
+  const { client_Id, nom, prenom, email, telephone, adresse, ville, code_postal, pays, numero_tva } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO Clients (nom, prenom, email, telephone, adresse, ville, code_postal, pays) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [nom, prenom, email, telephone, adresse, ville, code_postal, pays]
+      'INSERT INTO Clients ( client_id, nom, prenom, email, telephone, adresse, ville, code_postal, pays, numero_tva) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+      [client_Id, nom, prenom, email, telephone, adresse, ville, code_postal, pays, numero_tva]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -55,7 +55,6 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
   const updates = req.body; // Contient seulement les champs à mettre à jour
-
   const query = `
     UPDATE clients 
     SET nom = $1, prenom = $2, email = $3, telephone = $4, adresse = $5, ville = $6, code_postal = $7, pays = $8, numero_tva = $9 
@@ -70,9 +69,9 @@ router.patch('/:id', async (req, res) => {
     updates.telephone,
     updates.adresse,
     updates.ville,
-    updates.codePostal, // Assurez-vous que le nom ici est correct
+    updates.code_postal,
     updates.pays,
-    updates.numeroTva,
+    updates.numero_tva,
     id
   ];
 

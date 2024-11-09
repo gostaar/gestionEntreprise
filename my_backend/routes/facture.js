@@ -23,7 +23,7 @@ router.get('/lastId', async(req, res) => {
 })
 
 router.get('/:id', async(req, res) => {
-  const facture_id = req.params.facutre_id;
+  const facture_id = req.params.facture_id;
   
   try{
     const result = await pool.query('SELECT * FROM Factures WHERE facture_id = $1', [facture_id]);
@@ -35,9 +35,8 @@ router.get('/:id', async(req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const { facture_id, client_id, date_facture, montant_total, statut, date_paiement } = req.body;
-
-  if (!client_id || !date_facture || !montant_total || !statut ) {
+  const { facture_id, client_id, montant_total, statut, date_paiement } = req.body;
+  if (!client_id || !montant_total || !statut ) {
     return res.status(400).send('Données d\'entrée manquantes ou incorrectes');
   }
 
@@ -49,8 +48,8 @@ router.post('/', async (req, res) => {
     }
 
     const result = await pool.query(
-      'INSERT INTO Factures (facture_id, client_id, date_facture, montant_total, statut, date_paiement) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [facture_id, client_id, date_facture, montant_total, statut, date_paiement]
+      'INSERT INTO Factures (facture_id, client_id, montant_total, statut, date_paiement) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [facture_id, client_id, montant_total, statut, date_paiement]
     );
 
     const facture = result.rows[0];

@@ -43,16 +43,16 @@ class _ComptesPageState extends State<ComptesPage> {
     final fetchedComptesClients = await createAccountsFromInvoices(fetchedFacturesClients);
     final fetchedComptesFournisseurs = await createAccountsFromFournisseurInvoices(fetchedFacturesFournisseurs);
 
-    setState(() {
+    if(mounted){setState(() {
       clientsComptes = fetchedComptesClients;
       fournisseursComptes = fetchedComptesFournisseurs; 
       isLoading = false; 
-    });
+    });}
   } catch (e) {
-    setState(() {
+    if(mounted){setState(() {
       isLoading = false;
-    });
-    throw Exception('Erreur lors du chargement des comptes : $e'); 
+    });}
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors du chargement des comptes: $e')),);
   }
 }
 
@@ -88,7 +88,7 @@ class _ComptesPageState extends State<ComptesPage> {
               builder: (BuildContext context) {
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: AddCompteForm(addCompteFunction: CompteService.addCompte,),
+                  child: AddCompteForm(createCompteFunction: CompteService.createCompte,),
                 );
               },
             );

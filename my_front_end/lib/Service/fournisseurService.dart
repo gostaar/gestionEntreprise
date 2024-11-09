@@ -41,7 +41,7 @@ class FournisseurService {
     }
   }
 
-  static Future<void> addFournisseur({
+  static Future<void> createFournisseur({
     required int fournisseurId,
     required String? nom,
     required String? prenom,

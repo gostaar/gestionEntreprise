@@ -14,9 +14,9 @@ class AddFournisseurForm extends StatefulWidget {
     required String? codePostal,
     required String? pays,
     required String? numeroTva,
-  }) addFournisseurFunction;
+  }) createFournisseurFunction;
 
-  const AddFournisseurForm({Key? key, required this.addFournisseurFunction}) : super(key: key);
+  const AddFournisseurForm({Key? key, required this.createFournisseurFunction}) : super(key: key);
 
   @override
   _AddFournisseurFormState createState() => _AddFournisseurFormState();
@@ -41,10 +41,10 @@ class _AddFournisseurFormState extends State<AddFournisseurForm> {
     'Numéro de TVA',
   ];
 
-  Future<void> _addFournisseur() async {
+  Future<void> _createFournisseur() async {
     try {
       final lastFournisseurId = await FournisseurService.getLastFournisseurId() +1;
-      await widget.addFournisseurFunction(
+      await widget.createFournisseurFunction(
         fournisseurId: lastFournisseurId, 
         nom: _controllers[0].text,
         prenom: _controllers[1].text,
@@ -75,7 +75,7 @@ class _AddFournisseurFormState extends State<AddFournisseurForm> {
               addFournisseurWidget(
                 _labels,
                 _controllers,
-                _addFournisseur,
+                _createFournisseur,
               )
             ],
           ),

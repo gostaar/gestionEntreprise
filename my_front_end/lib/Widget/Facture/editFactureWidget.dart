@@ -14,6 +14,8 @@ Widget editFactureWidget(
   double? prixUnitaire,
   double? sousTotal,
   bool isEnabled,
+  Function(DateTime?) onChangeDateFacture,
+  Function(DateTime?) onChangeDatePaiement,
   Function(int?) onChangedClient,
   Function(String?) onChangedStatut,
   Function(int?) onChangedProduit,
@@ -48,13 +50,13 @@ Widget editFactureWidget(
           ),
         ),
         readOnly: true,
-        onTap: () {
+        onTap: ()  {
           FocusScope.of(context).requestFocus(FocusNode());
-          selectDate(context, controllers['dateFacture']!);
+          selectDate(context, controllers['dateFacture']!, onChangeDateFacture);
         },
       ),
       DropdownButtonFormField<int>(
-        value: int.parse(formData['cliend_id']!), // Utilise selectedClient comme valeur par défaut
+        value: int.parse(formData['cliend_id']!),
         decoration: InputDecoration(labelText: 'Client'),
         items: clients.isNotEmpty
             ? clients.map((client) {
@@ -66,8 +68,8 @@ Widget editFactureWidget(
             : [],
         onChanged: clients.isNotEmpty
             ? (newValue) {
-                onChangedClient(newValue); // Appelle la fonction onChanged passée en paramètre
-                throw Exception("Client sélectionné : $newValue"); // Affiche le nouveau client sélectionné
+                onChangedClient(newValue);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Client sélectionné: $newValue')),);
               }
             : null,
       ),
@@ -112,9 +114,9 @@ Widget editFactureWidget(
           ),
         ),
         readOnly: true,
-        onTap: () {
+        onTap: ()  {
           FocusScope.of(context).requestFocus(FocusNode());
-          selectDate(context, controllers['datePaiement']!);
+          selectDate(context, controllers['datePaiement']!, onChangeDatePaiement);
         },
       ),
       DropdownButtonFormField<String>(

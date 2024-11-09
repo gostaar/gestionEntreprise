@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/constants.dart';
 import 'package:my_first_app/models/clientModel.dart';
 
 class ClientInfoSection extends StatelessWidget {
@@ -11,8 +12,8 @@ class ClientInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Client: ${client.nom} ${client.prenom}', style: TextStyle(fontSize: 20)),
-        Text('Email: ${client.email}', style: TextStyle(fontSize: 16)),
+        Text('${clientLabel}: ${client.nom} ${client.prenom}', style: TextStyle(fontSize: 20)),
+        Text('${emailLabel}: ${client.email}', style: TextStyle(fontSize: 16)),
       ],
     );
   }

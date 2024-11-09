@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 import 'package:my_first_app/Service/clientService.dart';
@@ -38,13 +37,13 @@ class _FacturesPageState extends State<FacturesPage> {
   Future<void> _refreshFactures() async {
     try {      
       final factures = await factureService.fetchFactures();
-      setState(() {
+      if(mounted){setState(() {
         _factures = factures;
         _filteredFactures = factures;
 
-      });
-    } catch (error) {
-      showError(context, 'Erreur lors de la récupération des factures: $error');
+      });}
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des factures: $e')),);
     }
   }
 
@@ -73,8 +72,8 @@ class _FacturesPageState extends State<FacturesPage> {
       builder: (BuildContext context) => Padding(
         padding: const EdgeInsets.all(16.0),
         child: AddFactureForm(
-          addFactureFunction: FactureService.addFacture,
-          addLigneFactureFunction: FactureService.addLigneFacture,
+          createFactureFunction: FactureService.createFacture,
+          createLigneFactureFunction: FactureService.createLigneFacture,
         ),
       ),
     ).then((_) => _refreshFactures());
@@ -102,9 +101,9 @@ class _FacturesPageState extends State<FacturesPage> {
           ),
         ),
       );
-    } catch (error) {
+    } catch (e) {
       Navigator.pop(context);
-      showError(context, 'Erreur lors de la récupération des données: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des données: $e')),);
     }
   }
 

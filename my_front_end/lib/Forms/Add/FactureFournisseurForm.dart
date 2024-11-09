@@ -13,9 +13,9 @@ class AddFactureFournisseurForm extends StatefulWidget {
     required double? montantTotal,
     required String? statut,
     required DateTime? datePaiement,
-  }) addFactureFournisseurFunction;
+  }) createFactureFournisseurFunction;
 
-  const AddFactureFournisseurForm({Key? key, required this.addFactureFournisseurFunction}) : super(key: key);
+  const AddFactureFournisseurForm({Key? key, required this.createFactureFournisseurFunction}) : super(key: key);
 
   @override
   _AddFactureFournisseurFormState createState() => _AddFactureFournisseurFormState();
@@ -26,7 +26,8 @@ class _AddFactureFournisseurFormState extends State<AddFactureFournisseurForm> {
     'datePaiement': TextEditingController(),
     'dateFacture': TextEditingController(),
   };
-
+  DateTime? _datePaiementController;
+  DateTime? _dateFactureController; 
   //contenu dropdown
   List<Fournisseur> _fournisseurs = [];
   //selected dropdown
@@ -44,33 +45,33 @@ class _AddFactureFournisseurFormState extends State<AddFactureFournisseurForm> {
   Future<void> _fetchFournisseurs() async {
     try{
       final response = await FournisseurService.fetchFournisseurs();
-       setState(() {_fournisseurs = response;});
+      if(mounted){setState(() {_fournisseurs = response;});}
     } catch (e) {
-      throw Exception('Erreur lors du chargement des fournisseurs, $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors du chargement des fournisseurs: $e')),);
     }
   }
 
-  Future<void> _addFournisseurs() async {
-    final result = await Navigator.push(context, MaterialPageRoute( builder: (context) => AddFournisseurForm(addFournisseurFunction: FournisseurService.addFournisseur,),),);
+  Future<void> _createFournisseurs() async {
+    final result = await Navigator.push(context, MaterialPageRoute( builder: (context) => AddFournisseurForm(createFournisseurFunction: FournisseurService.createFournisseur,),),);
     if (result == true) {
-      setState(() {_fetchFournisseurs(); });
+      if(mounted){setState(() {_fetchFournisseurs(); });}
     }
   }
   
-  Future<void> _addFournisseurFacture() async {
+  Future<void> _createFournisseurFacture() async {
     try {
       int lastFournisseurFactureId = await FactureFournisseurService.getLastFactureFournisseurId()+1;
-      await widget.addFactureFournisseurFunction(
+      await widget.createFactureFournisseurFunction(
         id: lastFournisseurFactureId,
         fournisseurId: _selectedFournisseur!,
         montantTotal: _sousTotal!,
         statut: _selectedStatut!,
-        dateFacture: DateTime.tryParse(_controllers['dateFacture']!.text),
-        datePaiement: DateTime.tryParse(_controllers['datePaiement']!.text),
+        dateFacture: _dateFactureController,
+        datePaiement: _datePaiementController,
       );
       Navigator.pop(context, true);
     } catch (e) {
-      throw Exception('Erreur lors de l\'ajout de la facture: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout de la facture: $e')),);
     }
   }
 
@@ -87,10 +88,14 @@ class _AddFactureFournisseurFormState extends State<AddFactureFournisseurForm> {
             _fournisseurs,
             _sousTotal,
             _selectedFournisseur != null && _sousTotal != null,
+            _dateFactureController,
+            _datePaiementController,
+            (DateTime? newValue){setState(() {_dateFactureController = newValue!;});}, 
+            (DateTime? newValue){setState(() {_datePaiementController = newValue!;});},
             (int? newValue) { setState(() { _selectedFournisseur = newValue; });},
             (String? newValue) {setState(() {_selectedStatut = newValue;});},
-            _addFournisseurs,
-            _addFournisseurFacture,
+            _createFournisseurs,
+            _createFournisseurFacture,
           )
         ]
       ),

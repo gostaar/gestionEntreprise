@@ -13,6 +13,10 @@ Widget addFactureFournisseurWidget(
   List<Fournisseur> fournisseurs,
   double? sousTotal,
   bool isEnabled,
+  DateTime? dateFactureController,
+  DateTime? datePaiementController,
+  Function(DateTime?) onChangeDateFacture,
+  Function(DateTime?) onChangeDatePaiement,
   Function(int?) onChangedFournisseur,
   Function(String?) onChangedStatut,
   Function() addFournisseur,
@@ -46,9 +50,9 @@ Widget addFactureFournisseurWidget(
             ),
           ),
           readOnly: true,
-          onTap: () {
+          onTap: ()  {
             FocusScope.of(context).requestFocus(FocusNode());
-            selectDate(context, controllers['dateFacture']!);
+            selectDate(context, controllers['dateFacture']!, onChangeDateFacture);
           },
           validator:(value) => value == null || value.isEmpty ? 'La date de la facture est requise' : null,
         ),
@@ -107,9 +111,9 @@ Widget addFactureFournisseurWidget(
             ),
           ),
           readOnly: true,
-          onTap: () {
+          onTap: ()  {
             FocusScope.of(context).requestFocus(FocusNode());
-            selectDate(context, controllers['datePaiement']!);
+            selectDate(context, controllers['datePaiement']!, onChangeDatePaiement);
           },
           validator:(value) => value == null || value.isEmpty ? 'La date de paiement est requise' : null,
         ),

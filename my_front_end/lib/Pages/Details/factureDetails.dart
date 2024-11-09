@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_first_app/Forms/Edit/FactureForm.dart';
 import 'package:my_first_app/Service/factureService.dart';
 import 'package:my_first_app/Widget/Facture/factureDetailsWidgets.dart';
+import 'package:my_first_app/constants.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 import 'package:my_first_app/models/ligneFactureModel.dart';
@@ -31,16 +31,15 @@ class _FactureDetailPageState extends State<FactureDetailPage> {
   void initState(){
     super.initState();
     _formData = {
-      'client': widget.client, 
-      'facture': widget.facture,
-      'ligneFacture': widget.lignesFacture,
+      clientFormData: widget.client, 
+      factureFormData: widget.facture,
+      ligneFactureFormData: widget.lignesFacture,
     };
   }
 
   Future<List<Widget>> _buildProductRows() async {
     List<Widget> rows = [];
     
-    // Fetch all products in parallel
     List<Produit?> produits = await Future.wait(
       widget.lignesFacture.map((ligne) => _getProduit(ligne.produitId)),
     );
@@ -102,17 +101,15 @@ class _FactureDetailPageState extends State<FactureDetailPage> {
       isScrollControlled: true,
       builder: (BuildContext context) => Padding(
         padding: const EdgeInsets.all(16.0),
-        child: EditFactureForm(
-          facture: _formData['facture'], // Utiliser widget.facture
-          lignesFacture: _formData['lignesFacture'],
-        ),
+        /*child: EditFactureForm(
+          facture: _formData[factureFormData], // Utiliser widget.facture
+          lignesFacture: _formData[ligneFactureFormData],
+        ),*/
       ),
     ).then((_) async {
-      final updatedFacture = await FactureService.getFactureById(_formData['facture'].id);
+      final updatedFacture = await FactureService.getFactureById(_formData[factureFormData].factureId);
       if (updatedFacture != null) {
-        setState(() {
-          widget.facture = updatedFacture; // Mise à jour de la facture
-        });
+        if(mounted){setState(() { widget.facture = updatedFacture; });}
       }
     });
   }
@@ -120,7 +117,7 @@ class _FactureDetailPageState extends State<FactureDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Facture ${_formData['facture'].id}'),),
+      appBar: AppBar(title: Text('$factureLabel ${_formData[factureFormData].factureId}'),),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

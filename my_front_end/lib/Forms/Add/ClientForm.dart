@@ -14,9 +14,9 @@ class AddClientForm extends StatefulWidget {
     required String? codePostal,
     required String? pays,
     required String? numeroTva,
-  }) addClientFunction;
+  }) createClientFunction;
 
-  const AddClientForm({Key? key, required this.addClientFunction}) : super(key: key);
+  const AddClientForm({Key? key, required this.createClientFunction}) : super(key: key);
 
   @override
   _AddClientFormState createState() => _AddClientFormState();
@@ -29,9 +29,10 @@ class _AddClientFormState extends State<AddClientForm> {
   );
 
   Future<void> _addClient() async {
+    
     try {
       final lastClientId = await ClientService.getLastClientId()+1;
-      await widget.addClientFunction(
+      await widget.createClientFunction(
         clientId: lastClientId, 
         nom: _controllers[0].text,
         prenom: _controllers[1].text,
@@ -46,6 +47,7 @@ class _AddClientFormState extends State<AddClientForm> {
       Navigator.pop(context, true);
     } catch (e){ 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout du client: $e')),);
+      print('$e');
     }
   }
 

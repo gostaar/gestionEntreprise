@@ -4,7 +4,6 @@ import 'package:my_first_app/Forms/Add/FactureFournisseurForm.dart';
 import 'package:my_first_app/Pages/Details/factureFournisseurPageDetails.dart';
 import 'package:my_first_app/Service/factureFournisseurService.dart';
 import 'package:my_first_app/Service/fournisseurService.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/fournisseursModel.dart';
 import 'package:my_first_app/models/factureFournisseurModel.dart';
 
@@ -40,16 +39,16 @@ class _FactureFournisseurPageState extends State<FactureFournisseurPage> {
     //});
     try {
       final factures = await FactureFournisseurService.fetchFactureFournisseur();
-      setState(() {
+      if(mounted){setState(() {
         _factures = factures;
         _filteredFactures = factures;
         //_isLoading = false; // Fin du chargement
-      });
-    } catch (error) {
+      });}
+    } catch (e) {
       //setState(() {
       //  _isLoading = false; // Fin du chargement en cas d’erreur
       //});
-      showError(context, 'Erreur lors de la récupération des factures: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des factures: $e')),);
     }
   }
 
@@ -77,7 +76,7 @@ class _FactureFournisseurPageState extends State<FactureFournisseurPage> {
       isScrollControlled: true,
       builder: (BuildContext context) => Padding(
         padding: const EdgeInsets.all(16.0),
-        child: AddFactureFournisseurForm(addFactureFournisseurFunction: FactureFournisseurService.addFactureFournisseur,),
+        child: AddFactureFournisseurForm(createFactureFournisseurFunction: FactureFournisseurService.createFactureFournisseur,),
       ),
     ).then((_) => _refreshFactures());
   }
@@ -103,10 +102,9 @@ class _FactureFournisseurPageState extends State<FactureFournisseurPage> {
           ),
         ),
       );
-    } catch (error) {
+    } catch (e) {
       Navigator.of(context).pop(); // Close the loading dialog
-
-      showError(context, 'Erreur lors de la récupération des données : $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des données: $e')),);
     }
   }
 

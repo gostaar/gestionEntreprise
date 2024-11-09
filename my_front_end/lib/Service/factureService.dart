@@ -115,13 +115,13 @@ class FactureService {
     }
   }
 
-  static Future<void> addFacture({
+  static Future<void> createFacture({
     required int factureId,
     required int clientId,
     required double? montantTotal,
     required String? statut,
-    required DateTime? dateFacture,
-    required DateTime? datePaiement,
+    //required DateTime? dateFacture,
+    required String? datePaiement,
   }) async {
     try {
       await http.post(
@@ -130,7 +130,7 @@ class FactureService {
         body: jsonEncode({
           'facture_id': factureId,
           'client_id': clientId,
-          'date_facture': dateFacture,
+          //'date_facture': dateFacture,
           'montant_total': montantTotal,
           'statut': statut,
           'date_paiement': datePaiement,
@@ -143,7 +143,7 @@ class FactureService {
     }
   } 
   
-  static Future<void> addLigneFacture({
+  static Future<void> createLigneFacture({
     required int ligneId,
     required int factureId,
     required int produitId,

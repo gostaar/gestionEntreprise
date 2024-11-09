@@ -9,9 +9,9 @@ class AddProduitForm extends StatefulWidget {
     required double prix,
     required int quantiteEnStock,
     required String categorie,
-  }) addProduitFunction;
+  }) createProduitFunction;
 
-  const AddProduitForm({Key? key, required this.addProduitFunction}) : super(key: key);
+  const AddProduitForm({Key? key, required this.createProduitFunction}) : super(key: key);
 
 
   @override
@@ -36,9 +36,9 @@ class _AddProduitFormState extends State<AddProduitForm> {
   //final TextEditingController dateAjoutController = TextEditingController(text: DateTime.now().toLocal().toString().split(' ')[0],);
 
 
-  void _addProduit() async {
+  void _createProduit() async {
     try{
-      await widget.addProduitFunction(
+      await widget.createProduitFunction(
         produitId: 0,
         nomProduit: _controllers['nom']!.text,
         description: _controllers['description']!.text,
@@ -48,7 +48,7 @@ class _AddProduitFormState extends State<AddProduitForm> {
       );
       Navigator.pop(context, true);
     } catch(e) {
-      print ("Erreur lors de l'ajout du produit, $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout du produit: $e')),);
     }
   }
 
@@ -66,7 +66,7 @@ class _AddProduitFormState extends State<AddProduitForm> {
               addProduit(
                 _controllers, 
                 _updateQuantity, 
-                _addProduit 
+                _createProduit 
               ),
             ],           
           ),

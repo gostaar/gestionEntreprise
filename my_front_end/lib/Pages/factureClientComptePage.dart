@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:my_first_app/Pages/Details/factureDetails.dart';
 import 'package:my_first_app/Service/clientService.dart';
 import 'package:my_first_app/Service/factureService.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/models/clientModel.dart';
 import 'package:my_first_app/models/factureModel.dart';
 
@@ -76,9 +75,9 @@ class FactureListView extends StatelessWidget {
           ),
         ),
       );
-    } catch (error) {
+    } catch (e) {
       Navigator.pop(context);
-      showError(context, 'Erreur lors de la récupération des données: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des données: $e')),);
     }
   }
 

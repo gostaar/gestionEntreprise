@@ -3,7 +3,6 @@ import 'package:my_first_app/Forms/Add/FournisseurForm.dart';
 import 'package:my_first_app/Pages/Details/fournisseursPageDetails.dart';
 import 'package:my_first_app/Service/factureFournisseurService.dart';
 import 'package:my_first_app/Service/fournisseurService.dart';
-import 'package:my_first_app/Widget/customWidget/showErrorWidget.dart';
 import 'package:my_first_app/constants.dart';
 import 'package:my_first_app/models/fournisseursModel.dart';
 import 'package:my_first_app/models/factureFournisseurModel.dart';
@@ -35,22 +34,17 @@ class _FournisseurPageState extends State<FournisseurPage> {
   }
 
   void _loadFournisseurs() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if(mounted){setState(() {_isLoading = true;});}
     try {
       final fournisseursList = await FournisseurService.fetchFournisseurs();
-      setState(() {
+      if(mounted){setState(() {
         _fournisseur = fournisseursList;
-                _filteredFournisseurs = fournisseursList; // Initialisation de la liste filtrée
-
-      });
-    } catch (error) {
-      showError(context, 'Erreur lors du chargement des fournisseurs: $error');
+        _filteredFournisseurs = fournisseursList;
+      });}
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors du chargement des fournisseurs: $e')),);
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if(mounted){setState(() {_isLoading = false;});}
     }
   }
 
@@ -83,9 +77,9 @@ class _FournisseurPageState extends State<FournisseurPage> {
         ),
       );
       
-    } catch (error) {
+    } catch (e) {
       Navigator.pop(context);
-      showError(context, 'Erreur lors de la récupération des factures: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de la récupération des factures: $e')),);
     }
   }
 
@@ -139,13 +133,13 @@ class _FournisseurPageState extends State<FournisseurPage> {
               builder: (BuildContext context) {
               return Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: AddFournisseurForm(addFournisseurFunction: FournisseurService.addFournisseur,),
+                  child: AddFournisseurForm(createFournisseurFunction: FournisseurService.createFournisseur,),
                 );
               },
             );
             _loadFournisseurs();
           } catch (e) {
-            throw Exception('Erreur lord de l\'ajour du fournisseur, $e');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout du fournisseur: $e')),);
           };
         },
         child: Icon(Icons.add),

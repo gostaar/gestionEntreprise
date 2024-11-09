@@ -11,9 +11,9 @@ class AddCompteForm extends StatefulWidget {
     required double montantCredit,
     required double? solde,
     required String dateCreation,
-  }) addCompteFunction;
+  }) createCompteFunction;
 
-  const AddCompteForm({Key? key, required this.addCompteFunction}) : super(key: key);
+  const AddCompteForm({Key? key, required this.createCompteFunction}) : super(key: key);
 
   @override
   _AddCompteFormState createState() => _AddCompteFormState();
@@ -28,7 +28,6 @@ class _AddCompteFormState extends State<AddCompteForm> {
     'debit': 0.0,
     'credit': 0.0,
   };
-  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   String? _selectedTypeCompte;
   
@@ -46,11 +45,11 @@ void _updateSolde() {
     }
   }
 
-  Future<void> _addCompte() async {
+  Future<void> _createCompte() async {
     _isLoading = true;
     try{
       final lastCompteId = await CompteService.getLastCompteId()+1;
-      await widget.addCompteFunction(
+      await widget.createCompteFunction(
         compteId: lastCompteId,
         nomCompte: _controllers['nom']!.text,
         typeCompte: _selectedTypeCompte!,
@@ -78,7 +77,7 @@ void _updateSolde() {
             _selectedTypeCompte,
             _isLoading,
             _updateSolde,
-            _addCompte,
+            _createCompte,
             (newValue) => setState(() => _selectedTypeCompte = newValue),
             (newValue) => setState(() => _controllers['solde']!.text = newValue),
           ),

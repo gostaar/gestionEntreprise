@@ -21,22 +21,23 @@ Widget factureDetailsWidget(
 }
 
 Widget _factureDetailsHeader(Map<String, dynamic> formData) {
+  bool isEditing = false;
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        'Client: ${formData['client'].nom} ${formData['client'].prenom}',
+        '$clientLabel: ${formData[clientFormData].nom} ${formData[clientFormData].prenom}',
         style: TextStyle(fontSize: 20),
       ),
       Text(
-        'Email: ${formData['client'].email}',
+        'Email: ${formData[clientFormData].email}',
         style: TextStyle(fontSize: 16),
       ),
       Text(
-        'Montant Total: ${NumberFormat.currency(locale: 'fr_FR', symbol: '€').format(formData['facture'].montantTotal ?? 0.0)}',
+        'Montant Total: ${NumberFormat.currency(locale: 'fr_FR', symbol: '€').format(formData[factureFormData].montantTotal ?? 0.0)}',
       ),
       Text(
-        'Date: ${formData['facture'].dateFacture != null ? DateFormat('dd/MM/yyyy').format(formData['facture'].dateFacture) : 'Date non renseignée'}',
+        'Date: ${formData[factureFormData].dateFacture != null ? DateFormat('dd/MM/yyyy').format(formData[factureFormData].dateFacture) : 'Date non renseignée'}',
       ),
       Divider(thickness: 1, color: customColors['lineGrey']),
     ],

@@ -36,7 +36,7 @@ class Facture {
     return {
       'facture_id': factureId,
       'client_id': clientId,
-      'date_facture': dateFacture,
+      //'date_facture': dateFacture,
       'montant_total': montantTotal,
       'statut': statut,
       'date_paiement': datePaiement

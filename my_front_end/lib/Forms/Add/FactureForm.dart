@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_first_app/Forms/Add/ClientForm.dart';
 import 'package:my_first_app/Forms/Add/ProduitForm.dart';
 import 'package:my_first_app/Service/clientService.dart';
@@ -12,11 +13,11 @@ class AddFactureForm extends StatefulWidget {
   final Future<void> Function({
     required int factureId,
     required int clientId,
-    required DateTime? dateFacture,
+    //required DateTime? dateFacture,
     required double? montantTotal,
     required String? statut,
-    required DateTime? datePaiement,
-  }) addFactureFunction;
+    required String? datePaiement,
+  }) createFactureFunction;
 
   final Future<void> Function({
     required int ligneId,
@@ -24,9 +25,9 @@ class AddFactureForm extends StatefulWidget {
     required int produitId,
     required int quantite,
     required double prixUnitaire,
-  }) addLigneFactureFunction;
+  }) createLigneFactureFunction;
 
-  const AddFactureForm({Key? key, required this.addFactureFunction, required this.addLigneFactureFunction}) : super(key: key);
+  const AddFactureForm({Key? key, required this.createFactureFunction, required this.createLigneFactureFunction}) : super(key: key);
 
   @override
   _AddFactureFormState createState() => _AddFactureFormState();
@@ -34,106 +35,115 @@ class AddFactureForm extends StatefulWidget {
 
 class _AddFactureFormState extends State<AddFactureForm> {
   final Map<String, TextEditingController> _controllers = {
-    'datePaiement': TextEditingController(),
-    'dateFacture': TextEditingController(),
-  }; 
-  //TextEditingController quantite = TextEditingController();
-  //contenu dropdown
+    'datePaiement': TextEditingController(), //dateTime
+    'dateFacture': TextEditingController(), //dateTime
+    'quantite': TextEditingController(), //int
+    'prixUnitaire': TextEditingController(), //double
+    'sous_total': TextEditingController(), //double
+    'selectedStatut': TextEditingController(), //string
+  };
+
+  final Map<String, int?> _selected = {
+    'Produit': null, //int
+    'Client': null, //int
+  };
+
+  DateTime? datePaiement;
+
   List<Client> _clients = [];
   List<Produit> _produits = [];
-  //selected dropdown
-  int? _selectedClient;
-  int? _selectedProduit;
-  String? _selectedStatut;
-  //informations additionnelles
-  double? _prixUnitaire;
-  double? _sousTotal;
-  int? _quantity;
-  double? calculateSousTotal(double prixUnitaire, String quantiteText) {
-    if (quantiteText.isNotEmpty) {
-      int quantite = int.parse(quantiteText);
-      return (prixUnitaire * quantite);
-    }
-    return 0; 
-  }
 
   @override
   void initState() {
     super.initState();
-    fetchClients();
-    fetchProduits();
+    _fetchClients();
+    _fetchProduits();
   }
 
-  void _updateQuantity(String value) { setState(() { _quantity = value.isNotEmpty ? int.tryParse(value) : null;  });}
+  void _updateQuantity(int? value) {setState(() { _controllers['quantite']!.text = value.toString();});}
 
-  void _calculateSousTotal() {setState(() { _sousTotal = calculateSousTotal(_prixUnitaire!, _controllers['quantite']!.text); });}
-
-  Future<void> addFacture() async {
-    try {
-      final lastFactureId = await FactureService.getLastFactureId() + 1;
-      await widget.addFactureFunction(
-        factureId: lastFactureId,
-        clientId: _selectedClient!,
-        dateFacture: DateTime.tryParse(_controllers['dateFacture']!.text),
-        montantTotal: _sousTotal!,
-        statut: _selectedStatut!,
-        datePaiement: DateTime.tryParse(_controllers['datePaiement']!.text),
+  void _calculateSousTotal() {
+    setState(() { 
+      double? sousTotal = calculateSousTotal(
+        _controllers['prixUnitaire']!.text, 
+        _controllers['quantite']!.text,
       );
-      addLigneFacture(lastFactureId);
+
+      _controllers['sous_total']!.text = sousTotal?.toStringAsFixed(2) ?? '0.00';
+    });
+  }
+
+  double? calculateSousTotal(String prixUnitaireText, String quantiteText) {
+    if (quantiteText.isNotEmpty) {
+      double prixUnitaire = double.parse(prixUnitaireText);
+      int quantite = int.parse(quantiteText);
+      return prixUnitaire * quantite;
+    }
+    return 0.0; 
+  }
+
+  Future<void> _createFacture() async {
+    try {
+    final lastFactureId = await FactureService.getLastFactureId() + 1;
+      await widget.createFactureFunction(
+        factureId: lastFactureId,
+        clientId: _selected['Client']!,
+        //dateFacture: dateFactureField,
+        montantTotal: double.parse(_controllers['sous_total']!.text),
+        statut: _controllers['selectedStatut']!.text,
+        datePaiement: datePaiement!.toIso8601String(),
+      );
+      _createLigneFacture(lastFactureId);
       Navigator.pop(context, true);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de l\'ajout de la facture: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout de la facture: $e')),);
     }
   }
 
-  Future<void> addLigneFacture(int factureId) async{
+  Future<void> _createLigneFacture(int factureId) async{
     try {
       final lastLigneId = await FactureService.getLastLigneId() +1;
-      await widget.addLigneFactureFunction(
+      await widget.createLigneFactureFunction(
         ligneId: lastLigneId,
         factureId: factureId,
-        produitId: _selectedProduit!,
-        quantite: _quantity!,
-        prixUnitaire: _prixUnitaire!,
+        produitId: _selected['Produit']!,
+        quantite: int.parse(_controllers['quantite']!.text),
+        prixUnitaire: double.parse(_controllers['prixUnitaire']!.text),
       );
     } catch(e){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de l\'ajout de la ligne de facture')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout de la ligne de facture: ${e.toString()}')),);
     }
   }
 
-  Future<void> fetchClients() async {
+  Future<void> _fetchClients() async {
     try{
       final response = await ClientService.fetchClients();
-      setState(() {_clients = response;});
+      if(mounted){setState(() {_clients = response;});}
     } catch (e) {
-      throw Exception('Erreur lors du chargement des clients, $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors du chargement des clients: ${e.toString()}')),);
     }
   }
     
-  Future<void> fetchProduits() async {
+  Future<void> _fetchProduits() async {
     try {
       final response = await ProduitService.fetchProduits();
-      setState(() {_produits = response;});
+      if(mounted){setState(() {_produits = response;});}
     } catch (e) {
-      throw Exception('Erreur lors du chargement des Produits, $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors du chargement des produits: ${e.toString()}')),);
     }
   }
 
-  Future<void> addClient() async {
-    final result = await Navigator.push(context, MaterialPageRoute( builder: (context) => AddClientForm(addClientFunction: ClientService.addClient,),),);
+  Future<void> _createClient() async {
+    final result = await Navigator.push(context, MaterialPageRoute( builder: (context) => AddClientForm(createClientFunction: ClientService.createClient,),),);
     if (result == true) {
-      setState(() {fetchClients(); });
+      if(mounted){setState(() {_fetchClients(); });}
     }
   }
   
-  Future<void> addProduit() async {
-    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddProduitForm(addProduitFunction: ProduitService.addProduit,),));
+  Future<void> _createProduit() async {
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddProduitForm(createProduitFunction: ProduitService.createProduit,),));
     if (result == true) {
-      setState(() {fetchProduits();});
+      if(mounted){setState(() {_fetchProduits();});}
     }
   }
 
@@ -142,30 +152,33 @@ class _AddFactureFormState extends State<AddFactureForm> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          addFactureWidget(
+          createFactureWidget(
             context,
             _controllers,
-            addClient,
-            addProduit,
-            addFacture,
+            _selected,
+            datePaiement,
+            _createClient,
+            _createProduit,
+            _createFacture,
             _calculateSousTotal,
+            (DateTime? newValue){setState(() {
+              _controllers['datePaiement']!.text = DateFormat('dd-MM-yyyy').format(newValue!);
+              datePaiement = newValue;
+            });},
             _updateQuantity,
-            (int? newValue) { setState(() { _selectedClient = newValue; });},
-            (String? newValue) {setState(() {_selectedStatut = newValue;});},
+            (int? newValue) { setState(() { _selected['Client'] = newValue; });},
+            (String? newValue) {setState(() {_controllers['selectedStatut']!.text = newValue!;});},
             (int? newValue) { setState(() {
-                _selectedProduit = newValue;
-                _prixUnitaire = _produits.firstWhere((product) => product.produitId == newValue).prix;
+                _selected['Produit'] = newValue;
+                _controllers['prixUnitaire']!.text = _produits
+                  .firstWhere((product) => product.produitId == newValue)
+                  .prix
+                  .toString();
                 _calculateSousTotal();
-              });},
+            });},
             _clients,
             _produits,
-            _selectedClient,
-            _selectedStatut,
-            _selectedProduit,
-            _prixUnitaire,
-            _sousTotal,
-            _quantity,
-            _selectedClient != null && _selectedProduit != null && _quantity != null,
+            _selected['Client'] != null && _selected['Produit'] != null && _controllers['quantite'] != null,
           ),
         ]
       ),

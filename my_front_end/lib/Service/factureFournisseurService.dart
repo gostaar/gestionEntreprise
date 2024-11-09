@@ -26,7 +26,7 @@ class FactureFournisseurService {
     }
   }
 
-  static Future<void> addFactureFournisseur({
+  static Future<void> createFactureFournisseur({
     required int id,
     required int fournisseurId,
     required DateTime? dateFacture,

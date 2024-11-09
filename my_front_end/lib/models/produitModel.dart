@@ -20,7 +20,7 @@ class Produit {
     try {
       prixValue = double.parse(json['prix'].toString());
     } catch (e) {
-      prixValue = 0.0; // Valeur par défaut en cas d'erreur
+      prixValue = 0.0;
       throw Exception('Erreur lors de la conversion du prix: $e');
     }
 
@@ -33,6 +33,15 @@ class Produit {
       categorie: json['categorie'],
     );
   }
+
+  factory Produit.defaut() => Produit(
+    produitId: -1, 
+    nomProduit: 'défault', 
+    description:'défault', 
+    prix: 0.0, 
+    quantiteEnStock: 0, 
+    categorie: 'service'
+  );
 
   Map<String, dynamic> toJson() {
     return{

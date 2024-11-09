@@ -39,9 +39,9 @@ class ClientService {
         'telephone': client.telephone,
         'adresse': client.adresse,
         'ville': client.ville,
-        'codePostal': client.codePostal,
+        'code_postal': client.codePostal,
         'pays': client.pays,
-        'numeroTva': client.numeroTva,
+        'numero_tva': client.numeroTva,
       }),
     );
     if (response.statusCode != 200) {
@@ -50,20 +50,23 @@ class ClientService {
   }
 
   static Future<int> getLastClientId() async {
-    final response = await http.get(Uri.parse('$apiUrl/clients/lastId'));
-    if(response.statusCode == 200){
-      final List<dynamic> data = json.decode(response.body);
-      if(data.isNotEmpty) {
-        return data[0]['clientId'];
-      } else {
-        throw Exception('Aucun client trouvé');
-      }
-    } else {
-      throw Exception('Erreur lors de la récupération du dernier client Id: ${response.body}');
-    }
-  }
+  final response = await http.get(Uri.parse('$apiUrl/clients/lastId'));
 
-  static Future<void> addClient({
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+   
+    // Vérifier si 'clientId' existe et est un entier
+    if (data.isNotEmpty && data[0]['client_id'] != null) {
+      return data[0]['client_id'];
+    } else {
+      throw Exception('Aucun client trouvé ou client_id est manquant');
+    }
+  } else {
+    throw Exception('Erreur lors de la récupération du dernier client id: ${response.body}');
+  }
+}
+
+  static Future<void> createClient({
     required int clientId,
     required String? nom,
     required String? prenom,
@@ -80,16 +83,16 @@ class ClientService {
         Uri.parse('$apiUrl/clients'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'clientId': clientId,
+          'client_Id': clientId,
           'nom': nom,
           'prenom': prenom,
           'email': email,
           'telephone': telephone,
           'adresse': adresse,
           'ville': ville,
-          'codePstal': codePostal,
+          'code_postal': codePostal,
           'pays': pays,
-          'numeroTva': numeroTva,
+          'numero_tva': numeroTva,
         }),
       );
     } catch (e) {

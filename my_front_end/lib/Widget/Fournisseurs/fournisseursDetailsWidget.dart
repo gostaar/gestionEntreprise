@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/Widget/customWidget/buildDetailRowWidget.dart';
 import 'package:my_first_app/models/fournisseursModel.dart';
 
 Widget fournisseurDetailWidget(BuildContext context, Fournisseur fournisseur) {
@@ -20,6 +19,27 @@ Widget fournisseurDetailWidget(BuildContext context, Fournisseur fournisseur) {
           buildDetailRow('Numéro de TVA', fournisseur.numeroTva),
         ],
       ),
+    ),
+  );
+}
+
+Widget buildDetailRow(String label, String? value) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 120, 
+          child: Text(
+            '$label:',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: Text(value ?? 'Non renseigné'),
+        ),
+      ],
     ),
   );
 }

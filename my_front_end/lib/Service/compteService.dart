@@ -29,7 +29,7 @@ class CompteService {
     }
   }
 
-  static Future<void> addCompte({
+  static Future<void> createCompte({
     required int compteId,
     required String nomCompte,
     required String typeCompte,
