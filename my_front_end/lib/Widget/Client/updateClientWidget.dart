@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_app/constants.dart';  // Assurez-vous que ce chemin est correct
+import 'package:my_first_app/constants.dart';  
 
-Widget updateDetailWidget(
+Widget buildDetailTab(
   Map<String, TextEditingController> controllers,
   bool isEditing,
 ) {
@@ -9,10 +9,9 @@ Widget updateDetailWidget(
     padding: const EdgeInsets.all(16.0),
     itemCount: controllers.length,
     itemBuilder: (context, index) {
-      final label = clientLabels[index]; // Le label du champ
-      final controller = controllers.values.elementAt(index); // Le contrôleur associé au champ
+      final label = clientLabels[index]; 
+      final controller = controllers.values.elementAt(index); 
 
-      // Utilisation du widget approprié en fonction du mode (édition ou affichage)
        if(isEditing){
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -30,7 +29,6 @@ Widget updateDetailWidget(
                 child:TextFormField(
                   controller: controller,
                   decoration: InputDecoration(
-                    // Ajoutez un soulignement au champ pour indiquer l'édition
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 8),
                     focusedBorder: UnderlineInputBorder(
@@ -62,6 +60,6 @@ Widget updateDetailWidget(
           ),
         );
       }
-    },
+    }
   );
 }

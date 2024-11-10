@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_first_app/Widget/Facture/details/buildrowsWidget.dart';
 import 'package:my_first_app/constants.dart';
 
 Widget factureDetailsWidget(
   BuildContext context,
   Map<String, dynamic> formData,
   Function(BuildContext) openEditFactureForm,
-  Function() buildProductRows,
+  ProductRowsWidget productRowsWidget,
 ) {
   return Column(
     mainAxisSize: MainAxisSize.min,
@@ -15,7 +16,7 @@ Widget factureDetailsWidget(
       const SizedBox(height: 20),
       _productTableHeader(),
       Divider(thickness: 2),
-      _productRowsBuilder(buildProductRows),
+      productRowsWidget,
     ]
   ); 
 }
@@ -56,19 +57,5 @@ Widget _productTableHeader() {
       SizedBox(width: 16),
       Text('Total', style: TextStyle(fontWeight: FontWeight.bold)),
     ],
-  );
-}
-
-Widget _productRowsBuilder(Function buildProductRows) {
-  return FutureBuilder<List<Widget>>(
-    future: buildProductRows(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return Center(child: CircularProgressIndicator());
-      } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-        return Center(child: Text('Aucun produits renseigné'));
-      }
-      return Column(children: snapshot.data!);
-    },
   );
 }

@@ -14,9 +14,9 @@ class ClientsPage extends StatefulWidget {
 
 class _ClientsPageState extends State<ClientsPage> {
   List<Client> clients = []; 
-    List<Client> filteredClients = [];
+  List<Client> filteredClients = [];
   final factureService = FactureService();
-    final TextEditingController searchController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
 
   @override

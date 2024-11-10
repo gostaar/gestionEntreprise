@@ -34,7 +34,7 @@ const String adresseField = 'adresse';
 const String villeField = 'ville';
 const String codePostalField = 'code_postal';
 const String paysField = 'pays';
-const String tvaField = 'numera_tva';
+const String tvaField = 'numero_tva';
 
 const String clientFormData = 'client';
 const String factureFormData = 'facture';

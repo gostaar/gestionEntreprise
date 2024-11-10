@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_first_app/Service/produitService.dart';
 import 'package:my_first_app/models/ligneFactureModel.dart';
 import 'package:my_first_app/models/produitModel.dart';
 
-Future<List<Widget>> BuildProductRows(
-  List<LigneFacture> lignesFacture,
-  Future<Produit?> Function(int produitId) getProduit
-) async {
+class ProductRowsWidget extends StatelessWidget {
+  final List<LigneFacture> lignesFacture;
+
+  const ProductRowsWidget({Key? key, required this.lignesFacture}) : super(key: key);
+
+  Future<List<Widget>> _buildProductRows() async {
     List<Widget> rows = [];
-    
     List<Produit?> produits = await Future.wait(
-      lignesFacture.map((ligne) => getProduit(ligne.produitId)),
+      lignesFacture.map((ligne) => _getProduit(ligne.produitId)),
     );
 
     for (int i = 0; i < lignesFacture.length; i++) {
@@ -54,6 +56,32 @@ Future<List<Widget>> BuildProductRows(
         ),
       );
     }
-    
+
     return rows;
   }
+
+  Future<Produit?> _getProduit(int produitId) async {
+    List<Produit>? produits = await ProduitService.getProduitsById(produitId);
+    return produits != null && produits.isNotEmpty ? produits.first : null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Widget>>(
+      future: _buildProductRows(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Erreur: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Aucun produit à afficher.'));
+        } else {
+          return Column(
+            children: snapshot.data!,
+          );
+        }
+      },
+    );
+  }
+}
